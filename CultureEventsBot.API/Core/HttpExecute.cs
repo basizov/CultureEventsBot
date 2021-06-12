@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CultureEventsBot.Core.Commands;
 using CultureEventsBot.Domain.Entities;
 using CultureEventsBot.Domain.Enums;
 using CultureEventsBot.Persistance;
@@ -16,17 +17,17 @@ namespace CultureEventsBot.API.Core
 {
     public static class HttpExecute
     {
-        public async static Task	ShowEvents(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context)
+        public async static Task	ShowEvents(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var request = new HttpRequestMessage(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size=1");
 			var clientHttp = httpClient.CreateClient();
 			var response = await clientHttp.SendAsync(request);
+			var command = commands.AsEnumerable().FirstOrDefault(c => c.Name == "/events");
 
 			if (response.IsSuccessStatusCode)
 			{
 				var eventsIds = await response.Content.ReadFromJsonAsync<EventParent>();
-				var events = new List<Event>();
 
 				foreach (var id in eventsIds.Results)
 				{
@@ -34,12 +35,12 @@ namespace CultureEventsBot.API.Core
 					response = await clientHttp.SendAsync(request);
 					var ev = await response.Content.ReadFromJsonAsync<Event>();
 
-					events.Add(ev);
-					await client.SendPhotoAsync(message.Chat.Id,
+					var mes = await client.SendPhotoAsync(message.Chat.Id,
 					photo: ev.Images.First().Image,
 					caption: $@"
 <i>{ev.Id}</i>
-<b>{ev.Title}</b>",
+<b>{ev.Title}</b>
+<i>{ev.Site_Url}</i>",
 					replyMarkup: new InlineKeyboardMarkup(new[]
 					{
 						new []
@@ -48,9 +49,12 @@ namespace CultureEventsBot.API.Core
 						}
 					}),
 					parseMode: ParseMode.Html);
+					
+					if (command != null)
+						command.MessageId = mes.MessageId;
+					context.Events.Add(ev);
 				}
-				context.Events.AddRange(events);
-				await context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 		}
 

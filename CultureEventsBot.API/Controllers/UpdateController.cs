@@ -75,20 +75,19 @@ namespace CultureEventsBot.API.Controllers
 				}
 			}
 			else if (message.Text == "Show events")
-				await HttpExecute.ShowEvents(_httpClient, message, client, _context);
+			{
+				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands);
+			}
 		}
 
         private async Task OnCallbackHandlerAsync(CallbackQuery callbackQuery, TelegramBotClient client, IReadOnlyList<Command> commands)
         {
-			if (commands != null)
+			foreach (var command in commands)
 			{
-				foreach (var command in commands)
+				if (command.Contains(callbackQuery.Message))
 				{
-					if (command.Contains(callbackQuery.Message))
-					{
-						await command.Inline(callbackQuery, client, _context);
-						break;
-					}
+					await command.Inline(callbackQuery, client, _context);
+					break;
 				}
 			}
         }

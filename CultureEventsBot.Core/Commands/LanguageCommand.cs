@@ -13,16 +13,21 @@ namespace CultureEventsBot.Core.Commands
 	{
 		public override string Name => @"/language";
 
-		public override bool Contains(Message message)
+		public override int MessageId { get; set; }
+
+		public override bool Contains(Message message, string inline = null)
 		{
 			if (message == null || message.Type != MessageType.Text)
 				return false;
 
-			return message.Text.Contains(this.Name);
+			return message.Text.Contains(this.Name) || MessageId == message.MessageId;
 		}
 
-		public override Task Execute(Message message, TelegramBotClient client, DataContext context) =>
-			Send.SendInlineKeyboard(message.Chat.Id, @"/language", client);
+		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
+		{
+			MessageId = message.MessageId;
+			await Task.CompletedTask;
+		}
 
 		public override async Task Inline(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
 		{
