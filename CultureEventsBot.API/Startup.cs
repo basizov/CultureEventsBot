@@ -1,8 +1,10 @@
 using CultureEventsBot.API.Services;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Domain.Entities;
+using CultureEventsBot.Persistance;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +23,7 @@ namespace CultureEventsBot.API
         	services.AddSingleton<IBotService, BotService>();
         	services.Configure<BotConfiguration>(_config.GetSection("BotConfiguration"));
             services.AddControllers().AddNewtonsoftJson();
+      		services.AddDbContext<DataContext>(opt => opt.UseNpgsql(_config.GetConnectionString("DefaultConnection")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -30,9 +33,9 @@ namespace CultureEventsBot.API
             app.UseEndpoints(endpoints => endpoints.MapControllers());
     		Bot.GetBotClientAsync(new BotConfiguration
 			{
-				Name = "",
-				Key = "",
-				Url = ""
+				Name = "KazanEventBot",
+				Key = "1824858522:AAF9OvgfrVsLJA_DNnQPfJdZ5KCvtBFmCDE",
+				Url = "https://085ef944abe6.ngrok.io/api/update"
 			}).Wait();
         }
     }

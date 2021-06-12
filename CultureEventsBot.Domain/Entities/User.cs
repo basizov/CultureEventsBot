@@ -12,5 +12,6 @@ namespace CultureEventsBot.Domain.Entities
 		public long	ChatId { get; set; }
 		public bool IsAdmin { get; set; }
 		public ELanguage	Language { get; set; }
+		public EStatus	Status { get; set; }
     }
 }

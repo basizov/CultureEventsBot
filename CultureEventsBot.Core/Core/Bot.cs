@@ -11,7 +11,7 @@ namespace CultureEventsBot.Core.Core
         private static TelegramBotClient botClient;
         private static List<Command> commandsList;
 
-        public static IReadOnlyList<Command> Commands => commandsList.AsReadOnly();
+        public static IReadOnlyList<Command> Commands => commandsList?.AsReadOnly();
 
 		public static async Task<TelegramBotClient> GetBotClientAsync(BotConfiguration config)
 		{

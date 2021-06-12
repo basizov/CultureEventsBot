@@ -13,12 +13,12 @@ namespace CultureEventsBot.Core.Commands
 		{
             var chatId = message.Chat.Id;
 
-            await client.SendTextMessageAsync(chatId, "Hallo I'm ASP.NET Core Bot", parseMode: ParseMode.Markdown);
+            await client.SendTextMessageAsync(chatId, "Hallo I'm ASP.NET Core Bot");
 		}
 
 		public override bool Contains(Message message)
 		{
-            if (message.Type != MessageType.Text)
+            if (message == null || message.Type != MessageType.Text)
                 return false;
 
             return message.Text.Contains(this.Name);
