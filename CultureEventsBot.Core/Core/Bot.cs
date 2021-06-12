@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CultureEventsBot.Core.Commands;
 using CultureEventsBot.Domain.Entities;
 using Telegram.Bot;
+using CultureEventsBot.Persistance;
 
 namespace CultureEventsBot.Core.Core
 {
@@ -20,6 +21,7 @@ namespace CultureEventsBot.Core.Core
 			
             commandsList = new List<Command>();
             commandsList.Add(new StartCommand());
+            commandsList.Add(new LanguageCommand());
 
             botClient = new TelegramBotClient(config.Key);
             string hook = string.Format(config.Url, "api/message/update");

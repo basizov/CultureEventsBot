@@ -19,6 +19,7 @@ namespace CultureEventsBot.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+			services.AddLogging();
        		services.AddHttpClient();
         	services.AddSingleton<IBotService, BotService>();
         	services.Configure<BotConfiguration>(_config.GetSection("BotConfiguration"));
@@ -31,12 +32,6 @@ namespace CultureEventsBot.API
             app.UseRouting();
             app.UseCors();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-    		Bot.GetBotClientAsync(new BotConfiguration
-			{
-				Name = "KazanEventBot",
-				Key = "1824858522:AAF9OvgfrVsLJA_DNnQPfJdZ5KCvtBFmCDE",
-				Url = "https://085ef944abe6.ngrok.io/api/update"
-			}).Wait();
         }
     }
 }
