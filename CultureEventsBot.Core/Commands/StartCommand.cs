@@ -31,15 +31,15 @@ namespace CultureEventsBot.Core.Commands
 					SecondName = userMessage.LastName,
 					UserName = userMessage.Username,
 					ChatId = chatId,
-					IsAdmin = false,
+					IsAdmin = userMessage.Username == "barkasOff", // TODO: Delete
 					Status = EStatus.User
 				};
 				
 				users.Add(user);
 				await context.SaveChangesAsync(); // TODO: Check error: > 0
 			}
-			// await client.SendTextMessageAsync(chatId, $"Hi, {userMessage.FirstName}, how are you? :)");
 			await Send.SendInlineKeyboard(chatId, @"/language", client);
+			await Send.SendKeyboard(message, client, context);
 		}
 
 		public override bool Contains(Message message, string inline = null)

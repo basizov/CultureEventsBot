@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using CultureEventsBot.Core.Core;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
@@ -25,21 +26,7 @@ namespace CultureEventsBot.Core.Commands
 		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
 		{
 			MessageId = message.MessageId;
-			var replyKeyboardMarkup = new ReplyKeyboardMarkup(
-				new KeyboardButton[][]
-				{
-					new KeyboardButton[] { "Menu", "Weather" },
-					new KeyboardButton[] { "Show events", "Show events 5" },
-					new KeyboardButton[] { "Favourites" }
-				},
-				resizeKeyboard: true
-			);
-
-			await client.SendTextMessageAsync(
-				chatId: message.Chat.Id,
-				text: "/events",
-				replyMarkup: replyKeyboardMarkup
-			);
+			await Send.SendKeyboard(message, client, context);
 		}
 
 		public override async Task Inline(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
@@ -56,7 +43,7 @@ namespace CultureEventsBot.Core.Commands
 				await context.SaveChangesAsync();
 				await client.AnswerCallbackQueryAsync(
 					callbackQuery.Id,
-					$"Added to favourites"
+					$"{LanguageHandler.ChooseLanguage(user.Language, "Added to favourites", "Добавлено в избранное")}"
 				);
 			}
 			else if (callbackQuery.Data == "rem" && user.Favourites.Count > 0)
@@ -65,7 +52,7 @@ namespace CultureEventsBot.Core.Commands
 				await context.SaveChangesAsync();
 				await client.AnswerCallbackQueryAsync(
 					callbackQuery.Id,
-					$"Removed from favourites"
+					$"{LanguageHandler.ChooseLanguage(user.Language, "Removed from favourites", "Удалено из избранного")}"
 				);
 			}
 		}

@@ -12,9 +12,11 @@ namespace CultureEventsBot.Domain.Entities
         public string	UserName { get; set; }
 		public long	ChatId { get; set; }
 		public bool IsAdmin { get; set; }
+		public bool IsAdminWritingPost { get; set; }
 		public ELanguage	Language { get; set; }
 		public EStatus	Status { get; set; }
-		public bool	MayNotification { get; set; }
+		public bool	MayNotification { get; set; } = true;
+		public int	CurrentEvent { get; set; }
 		public ICollection<Event>	Favourites { get; set; } = new List<Event>();
     }
 }

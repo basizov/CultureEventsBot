@@ -42,8 +42,9 @@ namespace CultureEventsBot.Core.Commands
 			await context.SaveChangesAsync(); // TODO: Check error: > 0
             await client.AnswerCallbackQueryAsync(
                 callbackQuery.Id,
-                $"Received {callbackQuery.Data}"
+                $"{LanguageHandler.ChooseLanguage(user.Language, "Choosen", "Выбран")} {callbackQuery.Data} {LanguageHandler.ChooseLanguage(user.Language, "language", "язык")}"
             );
+			await Send.SendKeyboard(callbackQuery.Message, client, context);
 		}
 
 		private ELanguage ConvertStringToEnum(string value)

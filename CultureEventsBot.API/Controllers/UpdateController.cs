@@ -8,6 +8,7 @@ using CultureEventsBot.Core.Commands;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Persistance;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -63,6 +64,8 @@ namespace CultureEventsBot.API.Controllers
 
         private async Task OnMessageHandlerAsync(Message message, TelegramBotClient client, IReadOnlyList<Command> commands)
 		{
+			var user = await _context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+
 			if (message.Text.StartsWith("/"))
 			{
 				foreach (var command in commands)
@@ -74,25 +77,27 @@ namespace CultureEventsBot.API.Controllers
 					}
 				}
 			}
-			else if (message.Text == "Show events")
+			else if (message.Text == "Show event" || message.Text == "Следущее событие")
 				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 1);
-			else if (message.Text == "Show events 5")
+			else if (message.Text == "Show events 5" || message.Text == "Ближайшие 5 событий")
 				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 5);
-			else if (message.Text == "Favourites")
+			else if (message.Text == "Favourites" || message.Text == "Избранное")
 				await HttpExecute.Favourites(message, client, _context, commands);
-			else if (message.Text == "Weather")
-				await HttpExecute.Weather(message, client, _httpClient);
-			else if (message.Text == "Menu")
+			else if (message.Text == "Weather" || message.Text == "Погода")
+				await HttpExecute.Weather(message, client, _httpClient, _context);
+			else if (message.Text == "Menu" || message.Text == "Меню")
 			{
 				await client.SendTextMessageAsync(
 					chatId: message.Chat.Id,
-					text: @"Choose a menu point:
+					text: $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point", "Выберите пункт меню")}:
 1. /info
 2. /language
 3. /rule
 "
-			);	
+				);	
 			}
+			else
+				await HttpExecute.Admin(message, client, _context);
 		}
 
         private async Task OnCallbackHandlerAsync(CallbackQuery callbackQuery, TelegramBotClient client, IReadOnlyList<Command> commands)

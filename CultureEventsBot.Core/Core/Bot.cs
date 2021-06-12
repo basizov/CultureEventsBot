@@ -23,6 +23,7 @@ namespace CultureEventsBot.Core.Core
             commandsList.Add(new StartCommand());
             commandsList.Add(new LanguageCommand());
             commandsList.Add(new EventsCommand());
+            commandsList.Add(new AdminHandler());
 
             botClient = new TelegramBotClient(config.Key);
             string hook = string.Format(config.Url, "api/message/update");

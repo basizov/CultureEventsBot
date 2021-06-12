@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Commands;
+using CultureEventsBot.Core.Core;
 using CultureEventsBot.Domain.Entities;
 using CultureEventsBot.Domain.Enums;
 using CultureEventsBot.Persistance;
@@ -21,7 +22,7 @@ namespace CultureEventsBot.API.Core
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var eventsDB = await context.Events.ToListAsync();
-			var page = eventsDB.Count + 1;
+			var page = user.CurrentEvent + 1;
 			var request = new HttpRequestMessage(HttpMethod.Get,
 				$"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}");
 			var clientHttp = httpClient.CreateClient();
@@ -45,14 +46,14 @@ namespace CultureEventsBot.API.Core
 						caption: $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
-<b>Price: {(ev.Is_Free ? "Бесплатно" : ev.Price.ToString())}</b>
+<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price.ToString())}</b>
 {ev.Description}
 <i>{ev.Site_Url}</i>",
 						replyMarkup: new InlineKeyboardMarkup(new[]
 						{
 							new []
 							{
-								InlineKeyboardButton.WithCallbackData("Add to favourites", "fav")
+								InlineKeyboardButton.WithCallbackData($"{LanguageHandler.ChooseLanguage(user.Language, "Add to favourites", "Добавить в избранное")}", "fav")
 							}
 						}),
 						parseMode: ParseMode.Html
@@ -60,7 +61,9 @@ namespace CultureEventsBot.API.Core
 					
 					if (command != null)
 						command.MessageId = mes.MessageId;
-					context.Events.Add(ev);
+					if (context.Events.FirstOrDefault(e => e.Id == ev.Id) == null)
+						context.Events.Add(ev);
+					++user.CurrentEvent;
 				}
 				context.SaveChanges();
 			}
@@ -75,9 +78,9 @@ namespace CultureEventsBot.API.Core
 			var command = commands.AsEnumerable().FirstOrDefault(c => c.Name == "/events");
 
 			if (userEvents.Count > 0)
-				await client.SendTextMessageAsync(message.Chat.Id, "Favourites:");
+				await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Favourites:", "Избранные:"));
 			else
-				await client.SendTextMessageAsync(message.Chat.Id, "You don't have favourites yet :(");
+				await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "You don't have favourites events yet :(", "У вас нет избранных событий:("));
 			foreach (var ev in userEvents)
 			{
 				var mes = await client.SendPhotoAsync(message.Chat.Id,
@@ -85,14 +88,14 @@ namespace CultureEventsBot.API.Core
 					caption: $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
-<b>Price: {(ev.Is_Free ? "Бесплатно" : ev.Price.ToString())}</b>
+<b>{LanguageHandler.ChooseLanguage(user.Language, "Price:", "Цена:")} {(ev.Is_Free ? LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно") : ev.Price.ToString())}</b>
 {ev.Description}
 <i>{ev.Site_Url}</i>",
 					replyMarkup: new InlineKeyboardMarkup(new[]
 					{
 						new []
 						{
-							InlineKeyboardButton.WithCallbackData("Remove from favourites", "rem")
+							InlineKeyboardButton.WithCallbackData(LanguageHandler.ChooseLanguage(user.Language, "Remove from favourites", "Удалить из избранных"), "rem")
 						}
 					}),
 					parseMode: ParseMode.Html
@@ -101,8 +104,9 @@ namespace CultureEventsBot.API.Core
 					command.MessageId = mes.MessageId;
 			}
 		}
-        public async static Task	Weather(Message message, TelegramBotClient client, IHttpClientFactory httpClient)
+        public async static Task	Weather(Message message, TelegramBotClient client, IHttpClientFactory httpClient, DataContext context)
 		{
+			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var request = new HttpRequestMessage(HttpMethod.Get, $"https://weatherapi-com.p.rapidapi.com/forecast.json?q=Kazan&days=1");
 
 			request.Headers.Add("x-rapidapi-key", "afa9b0e4c3msh324f1563390aa2dp1bdf92jsn04bf886907db");
@@ -111,12 +115,28 @@ namespace CultureEventsBot.API.Core
 			var response = await clientHttp.SendAsync(request);
 			var weather = await response.Content.ReadFromJsonAsync<Weather>();
 
-			await client.SendTextMessageAsync(message.Chat.Id, $@"Weather for {weather.Current.Last_Updated}:
-temperature is {weather.Current.Temp_C}
-feels like {weather.Current.Feelslike_C}
-wind speed is {weather.Current.Wind_Kph}
-cloud is {weather.Current.Cloud}
+			await client.SendTextMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Weather for", "Погода на")} {weather.Current.Last_Updated}:
+{LanguageHandler.ChooseLanguage(user.Language, "Temperature is", "Температура")} {weather.Current.Temp_C}
+{LanguageHandler.ChooseLanguage(user.Language, "Feels like ", "Ощущается как")} {weather.Current.Feelslike_C}
+{LanguageHandler.ChooseLanguage(user.Language, "Wind speed is", "Скорость ветра:")} {weather.Current.Wind_Kph}
+{LanguageHandler.ChooseLanguage(user.Language, "Cloud is", "Облачность")} {weather.Current.Cloud}
 ");
+		}
+        public async static Task	Admin(Message message, TelegramBotClient client, DataContext context)
+		{
+			var users = context.Users;
+			var	user = await users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+
+			if (user.IsAdmin && user.IsAdminWritingPost)
+			{
+				foreach	(var u in users)
+				{
+					if (u.MayNotification && !u.IsAdmin)
+					{
+						await client.ForwardMessageAsync(u.ChatId, message.Chat.Id, message.MessageId);
+					}
+				}
+			}
 		}
 
 		private static string ConvertStringToEnum(ELanguage value)
