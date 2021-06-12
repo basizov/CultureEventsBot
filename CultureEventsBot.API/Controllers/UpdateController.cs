@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using CultureEventsBot.API.Core;
 using CultureEventsBot.API.Services;
 using CultureEventsBot.Core.Commands;
 using CultureEventsBot.Core.Core;
@@ -20,13 +22,15 @@ namespace CultureEventsBot.API.Controllers
     {
 		private readonly DataContext _context;
     	private readonly IBotService	_botService;
+    	private readonly IHttpClientFactory	_httpClient;
     	private readonly ILogger<UpdateController>	_logger;
 
-		public UpdateController(IBotService botService, DataContext context, ILogger<UpdateController> logger)
+		public UpdateController(IBotService botService, DataContext context, ILogger<UpdateController> logger, IHttpClientFactory httpClient)
 		{
 			_context = context;
 			_botService = botService;
 			_logger = logger;
+			_httpClient = httpClient;
 		}
 
         [HttpPost]
@@ -43,8 +47,6 @@ namespace CultureEventsBot.API.Controllers
 				UpdateType.Message => OnMessageHandlerAsync(update.Message, client, commands),
                 UpdateType.EditedMessage => OnMessageHandlerAsync(update.Message, client, commands),
                 UpdateType.CallbackQuery => OnCallbackHandlerAsync(update.CallbackQuery, client, commands),
-                UpdateType.InlineQuery => OnInlineHandlerAsync(update.InlineQuery, client),
-                UpdateType.ChosenInlineResult => OnChosenInlineResultHandlerAsync(update.ChosenInlineResult, client, message.Chat.Id),
 				_ => UnknownTypeHandlerAsync(update)
 			};
 
@@ -61,7 +63,7 @@ namespace CultureEventsBot.API.Controllers
 
         private async Task OnMessageHandlerAsync(Message message, TelegramBotClient client, IReadOnlyList<Command> commands)
 		{
-			if (commands != null)
+			if (message.Text.StartsWith("/"))
 			{
 				foreach (var command in commands)
 				{
@@ -72,6 +74,8 @@ namespace CultureEventsBot.API.Controllers
 					}
 				}
 			}
+			else if (message.Text == "Show events")
+				await HttpExecute.ShowEvents(_httpClient, message, client, _context);
 		}
 
         private async Task OnCallbackHandlerAsync(CallbackQuery callbackQuery, TelegramBotClient client, IReadOnlyList<Command> commands)
@@ -87,34 +91,6 @@ namespace CultureEventsBot.API.Controllers
 					}
 				}
 			}
-        }
-		
-        private async Task OnInlineHandlerAsync(InlineQuery inlineQuery, TelegramBotClient client)
-        {
-            _logger.LogDebug($"Received inline query from: {inlineQuery.From.Id}");
-
-            InlineQueryResultBase[] results = {
-                new InlineQueryResultArticle(
-                    id: "3",
-                    title: "TgBots",
-                    inputMessageContent: new InputTextMessageContent(
-                        "hello"
-                    )
-                )
-            };
-
-            await client.AnswerInlineQueryAsync(
-                inlineQuery.Id,
-                results,
-                isPersonal: true,
-                cacheTime: 0
-            );
-        }
-
-        private async Task OnChosenInlineResultHandlerAsync(ChosenInlineResult chosenInlineResult, TelegramBotClient client, long chatId)
-        {
-			await client.SendTextMessageAsync(chatId, "Received inline result: {chosenInlineResult.ResultId}");
-			await Task.CompletedTask;
         }
 
         private async Task UnknownTypeHandlerAsync(Update update)
