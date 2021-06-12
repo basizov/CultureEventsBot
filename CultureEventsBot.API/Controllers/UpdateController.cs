@@ -75,8 +75,23 @@ namespace CultureEventsBot.API.Controllers
 				}
 			}
 			else if (message.Text == "Show events")
+				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 1);
+			else if (message.Text == "Show events 5")
+				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 5);
+			else if (message.Text == "Favourites")
+				await HttpExecute.Favourites(message, client, _context, commands);
+			else if (message.Text == "Weather")
+				await HttpExecute.Weather(message, client, _httpClient);
+			else if (message.Text == "Menu")
 			{
-				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands);
+				await client.SendTextMessageAsync(
+					chatId: message.Chat.Id,
+					text: @"Choose a menu point:
+1. /info
+2. /language
+3. /rule
+"
+			);	
 			}
 		}
 

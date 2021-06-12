@@ -26,6 +26,7 @@ namespace CultureEventsBot.Core.Commands
 		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
 		{
 			MessageId = message.MessageId;
+			await Send.SendInlineKeyboard(message.Chat.Id, @"/language", client);
 			await Task.CompletedTask;
 		}
 

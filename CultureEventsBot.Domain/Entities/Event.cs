@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace CultureEventsBot.Domain.Entities
@@ -17,7 +16,7 @@ namespace CultureEventsBot.Domain.Entities
 		public string	Description { get; set; }
 		public string	BodyText { get; set; }
 		public string	Site_Url { get; set; }
-		public string	Age_Restriction { get; set; }
+		// public string	Age_Restriction { get; set; }
 		public ICollection<ImageResponse>	Images { get; set; } = new List<ImageResponse>();
 		// public IEnumerable<string>	Categories { get; set; } = new List<string>();
 		// public DateTime	Dates { get; set; }

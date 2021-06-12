@@ -28,7 +28,9 @@ namespace CultureEventsBot.Core.Commands
 			var replyKeyboardMarkup = new ReplyKeyboardMarkup(
 				new KeyboardButton[][]
 				{
-					new KeyboardButton[] { "Show events" }
+					new KeyboardButton[] { "Menu", "Weather" },
+					new KeyboardButton[] { "Show events", "Show events 5" },
+					new KeyboardButton[] { "Favourites" }
 				},
 				resizeKeyboard: true
 			);
@@ -44,14 +46,28 @@ namespace CultureEventsBot.Core.Commands
 		{
 			var chatId = callbackQuery.Message.Chat.Id;
 			var	users = context.Users;
-			var user = await users.FirstOrDefaultAsync(u => u.ChatId == chatId);
+			var user = await users.Include(u => u.Favourites).FirstOrDefaultAsync(u => u.ChatId == chatId);
 			var textId = callbackQuery.Message.Caption.Split("\n")[0];
+			var ev = await context.Events.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
 
-			user.Favourites.Add(await context.Events.FirstOrDefaultAsync(e => e.Id == int.Parse(textId)));
-            await client.AnswerCallbackQueryAsync(
-                callbackQuery.Id,
-                $"Added to favourites"
-            );
+			if (callbackQuery.Data == "fav")
+			{
+				user.Favourites.Add(ev);
+				await context.SaveChangesAsync();
+				await client.AnswerCallbackQueryAsync(
+					callbackQuery.Id,
+					$"Added to favourites"
+				);
+			}
+			else if (callbackQuery.Data == "rem" && user.Favourites.Count > 0)
+			{
+				user.Favourites.Remove(ev);
+				await context.SaveChangesAsync();
+				await client.AnswerCallbackQueryAsync(
+					callbackQuery.Id,
+					$"Removed from favourites"
+				);
+			}
 		}
 	}
 }
