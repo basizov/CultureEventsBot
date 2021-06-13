@@ -1,22 +1,20 @@
+using System.Linq;
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Core;
-using CultureEventsBot.Domain.Enums;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class LanguageCommand : Command
+	public class KeyboardCommand : Command
 	{
-		public override string Name => @"/language";
+		public override string Name => @"/keyboard";
 
 		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
 		{
-			await Send.SendInlineKeyboard(message.Chat.Id, @"/language", client);
-			await Task.CompletedTask;
+			await Send.SendKeyboard(message, client, context);
 		}
 	}
 }

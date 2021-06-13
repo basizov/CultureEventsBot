@@ -47,7 +47,7 @@ namespace CultureEventsBot.API.Controllers
 			{
 				UpdateType.Message => OnMessageHandlerAsync(update.Message, client, commands),
                 UpdateType.EditedMessage => OnMessageHandlerAsync(update.Message, client, commands),
-                UpdateType.CallbackQuery => OnCallbackHandlerAsync(update.CallbackQuery, client, commands),
+                UpdateType.CallbackQuery => OnCallbackHandlerAsync(update.CallbackQuery, client),
 				_ => UnknownTypeHandlerAsync(update)
 			};
 
@@ -78,40 +78,34 @@ namespace CultureEventsBot.API.Controllers
 				}
 			}
 			else if (message.Text == "Show event" || message.Text == "Следущее событие")
-				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 1);
+				await HttpExecute.ShowEventsAsync(_httpClient, message, client, _context, commands, 1);
 			else if (message.Text == "Show events 5" || message.Text == "Ближайшие 5 событий")
-				await HttpExecute.ShowEvents(_httpClient, message, client, _context, commands, 5);
+				await HttpExecute.ShowEventsAsync(_httpClient, message, client, _context, commands, 5);
 			else if (message.Text == "Favourites" || message.Text == "Избранное")
-				await HttpExecute.Favourites(message, client, _context, commands);
+				await HttpExecute.FavouritesAsync(message, client, _context, commands);
 			else if (message.Text == "Weather" || message.Text == "Погода")
-				await HttpExecute.Weather(message, client, _httpClient, _context);
+				await HttpExecute.WeatherAsync(message, client, _httpClient, _context);
 			else if (message.Text == "Menu" || message.Text == "Меню")
-			{
-				await client.SendTextMessageAsync(
-					chatId: message.Chat.Id,
-					text: $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point", "Выберите пункт меню")}:
+				await Send.SendMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point", "Выберите пункт меню")}:
 1. /info
 2. /language
-3. /rule
-"
-				);	
-			}
+3. /rule", client);
+			else if (message.Text == "Search by categories" || message.Text == "Искать по категориям")
+				await HttpExecute.CategoriesAsync(message, client, _context);
 			else
-				await HttpExecute.Admin(message, client, _context);
+				await HttpExecute.AdminAsync(message, client, _context);
 		}
-
-        private async Task OnCallbackHandlerAsync(CallbackQuery callbackQuery, TelegramBotClient client, IReadOnlyList<Command> commands)
+        private async Task OnCallbackHandlerAsync(CallbackQuery callbackQuery, TelegramBotClient client)
         {
-			foreach (var command in commands)
-			{
-				if (command.Contains(callbackQuery.Message))
-				{
-					await command.Inline(callbackQuery, client, _context);
-					break;
-				}
-			}
+			if (callbackQuery.Data == "fav" || callbackQuery.Data == "rem")
+				await InlineHandlers.EventsAsync(callbackQuery, client, _context);
+			else if (callbackQuery.Data == "new")
+				await InlineHandlers.AdminAsync(callbackQuery, client, _context);
+			else if (callbackQuery.Data == "en" || callbackQuery.Data == "ru")
+				await InlineHandlers.LanguageAsync(callbackQuery, client, _context);
+			else
+				await InlineHandlers.CategoriesAsync(callbackQuery, client, _context);
         }
-
         private async Task UnknownTypeHandlerAsync(Update update)
         {
             _logger.LogError($"Unknown update type: {update.Type}");

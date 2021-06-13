@@ -22,11 +22,12 @@ namespace CultureEventsBot.Core.Core
             commandsList = new List<Command>();
             commandsList.Add(new StartCommand());
             commandsList.Add(new LanguageCommand());
-            commandsList.Add(new EventsCommand());
+            commandsList.Add(new KeyboardCommand());
             commandsList.Add(new AdminHandler());
 
             botClient = new TelegramBotClient(config.Key);
-            string hook = string.Format(config.Url, "api/message/update");
+            var hook = string.Format(config.Url, "api/message/update");
+
             await botClient.SetWebhookAsync(hook);
 			return (botClient);
 		}

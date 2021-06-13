@@ -18,49 +18,38 @@ namespace CultureEventsBot.API.Core
 {
 	public static class HttpExecute
     {
-        public async static Task	ShowEvents(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands, int pageSize)
+        public async static Task	ShowEventsAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands, int pageSize)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var eventsDB = await context.Events.ToListAsync();
 			var page = user.CurrentEvent + 1;
-			var request = new HttpRequestMessage(HttpMethod.Get,
-				$"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}");
-			var clientHttp = httpClient.CreateClient();
-			var response = await clientHttp.SendAsync(request);
-			var command = commands.AsEnumerable().FirstOrDefault(c => c.Name == "/events");
+			var eventsIds = await HttpWork<EventParent>.SendRequestAsync($"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
 
-			if (response.IsSuccessStatusCode)
+			if (eventsIds != null)
 			{
-				var eventsIds = await response.Content.ReadFromJsonAsync<EventParent>();
-
 				foreach (var id in eventsIds.Results)
 				{
-					request = new HttpRequestMessage(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/{id.Id}");
-					response = await clientHttp.SendAsync(request);
-					var ev = await response.Content.ReadFromJsonAsync<Event>();
+					var ev = await HttpWork<Event>.SendRequestAsync($"https://kudago.com/public-api/v1.4/events/{id.Id}", httpClient);
 
+					if (ev == null)
+						continue ;
 					ev.Description = ev.Description.Remove(0, 3);
 					ev.Description = ev.Description.Remove(ev.Description.Length - 5);
-					var mes = await client.SendPhotoAsync(message.Chat.Id,
-						photo: ev.Images.First().Image,
-						caption: $@"
+					if (ev.Price == null || ev.Price == "")
+						ev.Price = $"{LanguageHandler.ChooseLanguage(user.Language, "Unknown", "Неизвестно")}";
+					var mes = await Send.SendPhotoAsync(message.Chat.Id, ev.Images.First().Image, $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
-<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price.ToString())}</b>
+<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>
 {ev.Description}
-<i>{ev.Site_Url}</i>",
-						replyMarkup: new InlineKeyboardMarkup(new[]
+<i>{ev.Site_Url}</i>", new InlineKeyboardMarkup(new[]
 						{
 							new []
 							{
 								InlineKeyboardButton.WithCallbackData($"{LanguageHandler.ChooseLanguage(user.Language, "Add to favourites", "Добавить в избранное")}", "fav")
 							}
-						}),
-						parseMode: ParseMode.Html
-					);
+						}), ParseMode.Html, client);
 					
-					if (command != null)
-						command.MessageId = mes.MessageId;
 					if (context.Events.FirstOrDefault(e => e.Id == ev.Id) == null)
 						context.Events.Add(ev);
 					++user.CurrentEvent;
@@ -68,19 +57,18 @@ namespace CultureEventsBot.API.Core
 				context.SaveChanges();
 			}
 		}
-        public async static Task	Favourites(Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands)
+        public async static Task	FavouritesAsync(Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands)
 		{
 			var user = await context.Users
 				.Include(u => u.Favourites)
 				.ThenInclude(u => u.Images)
 				.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var userEvents = user.Favourites;
-			var command = commands.AsEnumerable().FirstOrDefault(c => c.Name == "/events");
 
 			if (userEvents.Count > 0)
-				await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Favourites:", "Избранные:"));
+				await Send.SendMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Favourites:", "Избранные:"), client);
 			else
-				await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "You don't have favourites events yet :(", "У вас нет избранных событий:("));
+				await Send.SendMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "You don't have favourites events yet :(", "У вас нет избранных событий:("), client);
 			foreach (var ev in userEvents)
 			{
 				var mes = await client.SendPhotoAsync(message.Chat.Id,
@@ -88,7 +76,7 @@ namespace CultureEventsBot.API.Core
 					caption: $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
-<b>{LanguageHandler.ChooseLanguage(user.Language, "Price:", "Цена:")} {(ev.Is_Free ? LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно") : ev.Price.ToString())}</b>
+<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>
 {ev.Description}
 <i>{ev.Site_Url}</i>",
 					replyMarkup: new InlineKeyboardMarkup(new[]
@@ -100,11 +88,9 @@ namespace CultureEventsBot.API.Core
 					}),
 					parseMode: ParseMode.Html
 				);
-				if (command != null)
-					command.MessageId = mes.MessageId;
 			}
 		}
-        public async static Task	Weather(Message message, TelegramBotClient client, IHttpClientFactory httpClient, DataContext context)
+        public async static Task	WeatherAsync(Message message, TelegramBotClient client, IHttpClientFactory httpClient, DataContext context)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var request = new HttpRequestMessage(HttpMethod.Get, $"https://weatherapi-com.p.rapidapi.com/forecast.json?q=Kazan&days=1");
@@ -122,7 +108,7 @@ namespace CultureEventsBot.API.Core
 {LanguageHandler.ChooseLanguage(user.Language, "Cloud is", "Облачность")} {weather.Current.Cloud}
 ");
 		}
-        public async static Task	Admin(Message message, TelegramBotClient client, DataContext context)
+        public async static Task	AdminAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var users = context.Users;
 			var	user = await users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
@@ -130,13 +116,44 @@ namespace CultureEventsBot.API.Core
 			if (user.IsAdmin && user.IsAdminWritingPost)
 			{
 				foreach	(var u in users)
-				{
 					if (u.MayNotification && !u.IsAdmin)
-					{
 						await client.ForwardMessageAsync(u.ChatId, message.Chat.Id, message.MessageId);
+				user.IsAdminWritingPost = false;
+				await context.SaveChangesAsync();
+				await Send.SendMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Success sending", "Успешное отправление"), client);
+			}
+		}
+        public async static Task	CategoriesAsync(Message message, TelegramBotClient client, DataContext context)
+		{
+			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var keyboard = new List<IEnumerable<InlineKeyboardButton>>();
+			var keyboardButtons = new List<InlineKeyboardButton>();
+
+			foreach (var e in context.Events)
+			{
+				if (e.Categories != null)
+				{
+					for (int i = 0; i < e.Categories.Length; ++i)
+					{
+						var btn = new InlineKeyboardButton
+						{
+							Text = e.Categories[i],
+							CallbackData = e.Categories[i]
+						};
+
+						if (keyboardButtons.FirstOrDefault(b => b.Text == e.Categories[i]) == null)
+							keyboardButtons.Add(btn);
 					}
 				}
 			}
+			foreach (var item in keyboardButtons)
+			{
+				var tempKeyboardButtons = new List<InlineKeyboardButton>();
+
+				tempKeyboardButtons.Add(item);
+				keyboard.Add(tempKeyboardButtons);
+			}
+			await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose the category:", "Выберите категорию:"), replyMarkup: new InlineKeyboardMarkup(keyboard));
 		}
 
 		private static string ConvertStringToEnum(ELanguage value)

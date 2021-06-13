@@ -5,7 +5,6 @@ namespace CultureEventsBot.Domain.Entities
 	public class Event
     {
         public int	Id { get; set; }
-		// public Guid UserId { get; set; }
 		public bool	Is_Free { get; set; }
 		public string	Price { get; set; }
 		// public float	Longitude { get; set; }
@@ -18,7 +17,7 @@ namespace CultureEventsBot.Domain.Entities
 		public string	Site_Url { get; set; }
 		// public string	Age_Restriction { get; set; }
 		public ICollection<ImageResponse>	Images { get; set; } = new List<ImageResponse>();
-		// public IEnumerable<string>	Categories { get; set; } = new List<string>();
+		public string[]	Categories { get; set; }
 		// public DateTime	Dates { get; set; }
     }
 
