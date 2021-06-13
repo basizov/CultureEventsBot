@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210613072237_AddDBFavourite")]
+    partial class AddDBFavourite
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,20 +48,25 @@ namespace CultureEventsBot.Persistance.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Favourite");
+                    b.ToTable("Favourites");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Favourite");
                 });
 
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.Genre", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<int?>("FilmId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("FilmId");
 
@@ -96,9 +103,6 @@ namespace CultureEventsBot.Persistance.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<int>("CurrentEvent")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CurrentFilm")
                         .HasColumnType("integer");
 
                     b.Property<string>("FirstName")

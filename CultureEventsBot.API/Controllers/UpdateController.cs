@@ -13,11 +13,10 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
 
 namespace CultureEventsBot.API.Controllers
 {
-    [ApiController]
+	[ApiController]
     [Route("api/[controller]")]
     public class UpdateController : Controller
     {
@@ -81,6 +80,10 @@ namespace CultureEventsBot.API.Controllers
 				await HttpExecute.ShowEventsAsync(_httpClient, message, client, _context, commands, 1);
 			else if (message.Text == "Show events 5" || message.Text == "Ближайшие 5 событий")
 				await HttpExecute.ShowEventsAsync(_httpClient, message, client, _context, commands, 5);
+			else if (message.Text == "Show film" || message.Text == "Следущий фильм")
+				await HttpExecute.ShowFilmsAsync(_httpClient, message, client, _context, commands, 1);
+			else if (message.Text == "Show films 5" || message.Text == "Ближайшие 5 фильмов")
+				await HttpExecute.ShowFilmsAsync(_httpClient, message, client, _context, commands, 5);
 			else if (message.Text == "Favourites" || message.Text == "Избранное")
 				await HttpExecute.FavouritesAsync(message, client, _context, commands);
 			else if (message.Text == "Weather" || message.Text == "Погода")
@@ -89,9 +92,12 @@ namespace CultureEventsBot.API.Controllers
 				await Send.SendMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point", "Выберите пункт меню")}:
 1. /info
 2. /language
-3. /rule", client);
+3. /rule
+4. /keyboard", client);
 			else if (message.Text == "Search by categories" || message.Text == "Искать по категориям")
 				await HttpExecute.CategoriesAsync(message, client, _context);
+			else if (message.Text == "Search by genres" || message.Text == "Искать по жанрам")
+				await HttpExecute.GenresAsync(message, client, _context);
 			else
 				await HttpExecute.AdminAsync(message, client, _context);
 		}
@@ -104,7 +110,7 @@ namespace CultureEventsBot.API.Controllers
 			else if (callbackQuery.Data == "en" || callbackQuery.Data == "ru")
 				await InlineHandlers.LanguageAsync(callbackQuery, client, _context);
 			else
-				await InlineHandlers.CategoriesAsync(callbackQuery, client, _context);
+				await InlineHandlers.FilterAsync(callbackQuery, client, _context);
         }
         private async Task UnknownTypeHandlerAsync(Update update)
         {

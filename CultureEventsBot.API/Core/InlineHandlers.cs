@@ -28,6 +28,10 @@ namespace CultureEventsBot.API.Core
 				);
 				user.IsAdminWritingPost = true;
 				await context.SaveChangesAsync();
+				await client.AnswerCallbackQueryAsync(
+					callbackQuery.Id,
+					$"{LanguageHandler.ChooseLanguage(user.Language, "Start writing", "Начните печатать")}"
+				);
 			}
 		}
         public static async Task	EventsAsync(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
@@ -36,8 +40,10 @@ namespace CultureEventsBot.API.Core
 			var	users = context.Users;
 			var user = await users.Include(u => u.Favourites).FirstOrDefaultAsync(u => u.ChatId == chatId);
 			var textId = callbackQuery.Message.Caption.Split("\n")[0];
-			var ev = await context.Events.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
+			Favourite ev = await context.Events.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
 
+			if (ev == null)
+				ev = await context.Films.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
 			if (callbackQuery.Data == "fav" && users.FirstOrDefault(e => e.Favourites.Contains(ev)) == null)
 			{
 				user.Favourites.Add(ev);
@@ -86,29 +92,34 @@ namespace CultureEventsBot.API.Core
             );
 			await Send.SendKeyboard(callbackQuery.Message, client, context);
 		}
-        public static async Task	CategoriesAsync(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
+        public static async Task	FilterAsync(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == callbackQuery.Message.Chat.Id);
 			var eventsDb = await context.Events
 				.Include(e => e.Images)
 				.ToListAsync();
-			var events = new List<Event>();
+			var filmsDb = await context.Films
+				.Include(e => e.Images)
+				.Include(e => e.Genres)
+				.ToListAsync();
+			var filters = new List<Favourite>();
 
 			foreach (var item in eventsDb)
-			{
 				if (item.Categories != null && item.Categories.FirstOrDefault(c => c == callbackQuery.Data) != null)
-					events.Add(item);
-			}
-			foreach (var ev in events)
+					filters.Add(item);
+			foreach (var item in filmsDb)
+				if (item.Genres != null && item.Genres.FirstOrDefault(c => c.Name == callbackQuery.Data) != null)
+					filters.Add(item);
+			foreach (var fil in filters)
 			{
 				var mes = await client.SendPhotoAsync(callbackQuery.Message.Chat.Id,
-					photo: ev.Images.First().Image,
+					photo: fil.Images.First().Image,
 					caption: $@"
-<i>{ev.Id}</i>
-<b>{ev.Title}</b>
-<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>
-{ev.Description}
-<i>{ev.Site_Url}</i>",
+<i>{fil.Id}</i>
+<b>{fil.Title}</b>
+{ConvertFavouriteToEvent(user, fil)}
+{fil.Description}
+<i>{fil.Site_Url}</i>",
 					replyMarkup: new InlineKeyboardMarkup(new[]
 					{
 						new []
@@ -130,6 +141,14 @@ namespace CultureEventsBot.API.Core
 			if (value == "en")
 				return (ELanguage.English);
 			return (ELanguage.Russian);
+		}
+		private static string	ConvertFavouriteToEvent(Domain.Entities.User user, Favourite favourite)
+		{
+			var res = "";
+
+			if (favourite is Event ev)
+				res = $"<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>";
+			return (res);
 		}
     }
 }

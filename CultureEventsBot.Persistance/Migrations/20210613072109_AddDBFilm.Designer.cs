@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210613072109_AddDBFilm")]
+    partial class AddDBFilm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,21 +53,6 @@ namespace CultureEventsBot.Persistance.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Favourite");
                 });
 
-            modelBuilder.Entity("CultureEventsBot.Domain.Entities.Genre", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("FilmId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("FilmId");
-
-                    b.ToTable("Genre");
-                });
-
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.ImageResponse", b =>
                 {
                     b.Property<int>("Id")
@@ -96,9 +83,6 @@ namespace CultureEventsBot.Persistance.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<int>("CurrentEvent")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CurrentFilm")
                         .HasColumnType("integer");
 
                     b.Property<string>("FirstName")
@@ -152,25 +136,11 @@ namespace CultureEventsBot.Persistance.Migrations
                     b.HasDiscriminator().HasValue("Event");
                 });
 
-            modelBuilder.Entity("CultureEventsBot.Domain.Entities.Film", b =>
-                {
-                    b.HasBaseType("CultureEventsBot.Domain.Entities.Favourite");
-
-                    b.HasDiscriminator().HasValue("Film");
-                });
-
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.Favourite", b =>
                 {
                     b.HasOne("CultureEventsBot.Domain.Entities.User", null)
                         .WithMany("Favourites")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("CultureEventsBot.Domain.Entities.Genre", b =>
-                {
-                    b.HasOne("CultureEventsBot.Domain.Entities.Film", null)
-                        .WithMany("Genres")
-                        .HasForeignKey("FilmId");
                 });
 
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.ImageResponse", b =>
@@ -188,11 +158,6 @@ namespace CultureEventsBot.Persistance.Migrations
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.User", b =>
                 {
                     b.Navigation("Favourites");
-                });
-
-            modelBuilder.Entity("CultureEventsBot.Domain.Entities.Film", b =>
-                {
-                    b.Navigation("Genres");
                 });
 #pragma warning restore 612, 618
         }

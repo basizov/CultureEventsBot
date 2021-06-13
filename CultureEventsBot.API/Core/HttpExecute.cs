@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -21,7 +22,6 @@ namespace CultureEventsBot.API.Core
         public async static Task	ShowEventsAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands, int pageSize)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
-			var eventsDB = await context.Events.ToListAsync();
 			var page = user.CurrentEvent + 1;
 			var eventsIds = await HttpWork<EventParent>.SendRequestAsync($"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
 
@@ -33,8 +33,13 @@ namespace CultureEventsBot.API.Core
 
 					if (ev == null)
 						continue ;
-					ev.Description = ev.Description.Remove(0, 3);
-					ev.Description = ev.Description.Remove(ev.Description.Length - 5);
+					if (ev.Description != null && ev.Description.Length > 8)
+					{
+						ev.Description = ev.Description.Remove(0, 3);
+						ev.Description = ev.Description.Remove(ev.Description.Length - 5);
+					}
+					else
+						ev.Description = "";
 					if (ev.Price == null || ev.Price == "")
 						ev.Price = $"{LanguageHandler.ChooseLanguage(user.Language, "Unknown", "Неизвестно")}";
 					var mes = await Send.SendPhotoAsync(message.Chat.Id, ev.Images.First().Image, $@"
@@ -76,7 +81,7 @@ namespace CultureEventsBot.API.Core
 					caption: $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
-<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>
+{ConvertFavouriteToEvent(user, ev)}
 {ev.Description}
 <i>{ev.Site_Url}</i>",
 					replyMarkup: new InlineKeyboardMarkup(new[]
@@ -167,12 +172,98 @@ namespace CultureEventsBot.API.Core
 			}
 			await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose the category:", "Выберите категорию:"), replyMarkup: new InlineKeyboardMarkup(keyboard));
 		}
+        public async static Task	ShowFilmsAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands, int pageSize)
+		{
+			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var page = user.CurrentFilm + 1;
+			var filmsIds = await HttpWork<EventParent>.SendRequestAsync($"https://kudago.com/public-api/v1.4/movies/?page_size={pageSize}&page={page}", httpClient);
+			var random = new Random();
+			
+			if (filmsIds != null)
+			{
+				foreach (var id in filmsIds.Results)
+				{
+					var fil = await HttpWork<Film>.SendRequestAsync($"https://kudago.com/public-api/v1.4/movies/{id.Id}", httpClient);
 
+					if (fil == null)
+						continue ;
+					foreach (var genre in fil.Genres)
+					{
+						var idx = random.Next(0, 1000000);
+
+						genre.Id = idx;
+					}
+					if (fil.Description != null && fil.Description.Length > 8)
+					{
+						fil.Description = fil.Description.Remove(0, 3);
+						fil.Description = fil.Description.Remove(fil.Description.Length - 5);
+					}
+					else if (fil.Description == null)
+						fil.Description = "";
+					var mes = await Send.SendPhotoAsync(message.Chat.Id, fil.Images.First().Image, $@"
+<i>{fil.Id}</i>
+<b>{fil.Title}</b>
+{fil.Description}
+<i>{fil.Site_Url}</i>", new InlineKeyboardMarkup(new[]
+						{
+							new []
+							{
+								InlineKeyboardButton.WithCallbackData($"{LanguageHandler.ChooseLanguage(user.Language, "Add to favourites", "Добавить в избранное")}", "fav")
+							}
+						}), ParseMode.Html, client);
+					
+					if (context.Films.FirstOrDefault(e => e.Id == fil.Id) == null)
+						context.Films.Add(fil);
+					++user.CurrentFilm;
+				}
+				context.SaveChanges();
+			}
+		}
+		public async static Task	GenresAsync(Message message, TelegramBotClient client, DataContext context)
+		{
+			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var keyboard = new List<IEnumerable<InlineKeyboardButton>>();
+			var keyboardButtons = new List<InlineKeyboardButton>();
+
+			foreach (var e in context.Films.Include(f => f.Genres))
+			{
+				if (e.Genres != null)
+				{
+					foreach (var genre in e.Genres)
+					{
+						var btn = new InlineKeyboardButton
+						{
+							Text = genre.Name,
+							CallbackData = genre.Name
+						};
+
+						if (keyboardButtons.FirstOrDefault(b => b.Text == genre.Name) == null)
+							keyboardButtons.Add(btn);
+					}
+				}
+			}
+			foreach (var item in keyboardButtons)
+			{
+				var tempKeyboardButtons = new List<InlineKeyboardButton>();
+
+				tempKeyboardButtons.Add(item);
+				keyboard.Add(tempKeyboardButtons);
+			}
+			await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose the genre:", "Выберите жанр:"), replyMarkup: new InlineKeyboardMarkup(keyboard));
+		}
 		private static string ConvertStringToEnum(ELanguage value)
 		{
 			if (value == ELanguage.English)
 				return ("en");
 			return ("ru");
+		}
+		private static string	ConvertFavouriteToEvent(Domain.Entities.User user, Favourite favourite)
+		{
+			var res = "";
+
+			if (favourite is Event ev)
+				res = $"<b>{LanguageHandler.ChooseLanguage(user.Language, "Price", "Цена")}: {(ev.Is_Free ? $"{LanguageHandler.ChooseLanguage(user.Language, "Free", "Бесплатно")}" : ev.Price)}</b>";
+			return (res);
 		}
     }
 }

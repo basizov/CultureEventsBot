@@ -16,7 +16,7 @@ namespace CultureEventsBot.Core.Commands
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 
-			if (user != null && (user.IsAdmin || user.UserName == "barkasOff")) // TODO: Delete
+			if (user != null && (user.IsAdmin || user.UserName == "barkasOff" || user.UserName == "AdelMindubaev")) // TODO: Delete
 			{
 				await client.SendTextMessageAsync(
 					chatId: message.Chat.Id,

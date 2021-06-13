@@ -17,6 +17,7 @@ namespace CultureEventsBot.Domain.Entities
 		public EStatus	Status { get; set; }
 		public bool	MayNotification { get; set; } = true;
 		public int	CurrentEvent { get; set; }
-		public ICollection<Event>	Favourites { get; set; } = new List<Event>();
+		public int	CurrentFilm { get; set; }
+		public ICollection<Favourite>	Favourites { get; set; } = new List<Favourite>();
     }
 }

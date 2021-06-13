@@ -42,8 +42,10 @@ namespace CultureEventsBot.Core.Core
 				{
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Menu", "Меню")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Weather", "Погода")}" },
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Show event", "Следущее событие")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Show events 5", "Ближайшие 5 событий")}" },
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Show film", "Следущий фильм")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Show films 5", "Ближайшие 5 фильмов")}" },
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Favourites", "Избранное")}" },
-					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search by categories", "Искать по категориям")}" }
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search by categories", "Искать по категориям")}" },
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search by genres", "Искать по жанрам")}" }
 				},
 				resizeKeyboard: true
 			);

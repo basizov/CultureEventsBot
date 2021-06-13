@@ -25,6 +25,7 @@ namespace CultureEventsBot.Core.Core
             commandsList.Add(new AdminCommand());
             commandsList.Add(new RuleCommand());
             commandsList.Add(new InfoCommand());
+            commandsList.Add(new KeyboardCommand());
 
             botClient = new TelegramBotClient(config.Key);
             var hook = string.Format(config.Url, "api/message/update");
