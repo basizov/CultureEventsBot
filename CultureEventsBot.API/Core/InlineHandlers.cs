@@ -113,12 +113,16 @@ namespace CultureEventsBot.API.Core
 					{
 						new []
 						{
-							InlineKeyboardButton.WithCallbackData(LanguageHandler.ChooseLanguage(user.Language, "Remove from favourites", "Удалить из избранных"), "rem")
+							InlineKeyboardButton.WithCallbackData(LanguageHandler.ChooseLanguage(user.Language, "Add to favourites", "Добавить в избранное"), "fav")
 						}
 					}),
 					parseMode: ParseMode.Html
 				);
 			}
+            await client.AnswerCallbackQueryAsync(
+                callbackQuery.Id,
+                $"{LanguageHandler.ChooseLanguage(user.Language, "Searched elements in the category", "Были найдены элементы в категории ")} {callbackQuery.Data}"
+            );
 		}
 
 		private static ELanguage ConvertStringToEnum(string value)

@@ -32,9 +32,10 @@ namespace CultureEventsBot.Core.Core
 				replyMarkup: inlineKeyboard
 			);
 		}
-		public static async Task SendKeyboard(Message message, TelegramBotClient client, DataContext context)
+		public static async Task SendKeyboard(Message message, TelegramBotClient client, DataContext context, string firstMessage = null)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var dialog = firstMessage ?? $"{LanguageHandler.ChooseLanguage(user.Language, "Language is changed", "Язык изменен")}";
 			
 			var replyKeyboardMarkup = new ReplyKeyboardMarkup(
 				new KeyboardButton[][]
@@ -49,7 +50,7 @@ namespace CultureEventsBot.Core.Core
 
 			await client.SendTextMessageAsync(
 				chatId: message.Chat.Id,
-				text: $"{LanguageHandler.ChooseLanguage(user.Language, "Keyboard is available", "Клавиатура доступна")}",
+				text: dialog,
 				replyMarkup: replyKeyboardMarkup
 			);
 		}

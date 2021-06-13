@@ -12,5 +12,11 @@ namespace CultureEventsBot.Domain.Entities
 		public double Feelslike_C { get; set; }
 		public int Cloud { get; set; }
 		public string Last_Updated { get; set; }
+		public Condition	Condition { get; set; }
+	}
+
+	public class Condition
+	{
+		public string	Text { get; set; }
 	}
 }

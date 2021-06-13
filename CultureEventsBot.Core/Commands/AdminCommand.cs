@@ -4,12 +4,11 @@ using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class AdminHandler : Command
+	public class AdminCommand : Command
 	{
 		public override string Name => @"/admin";
 

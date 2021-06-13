@@ -34,9 +34,15 @@ namespace CultureEventsBot.Core.Commands
 				
 				users.Add(user);
 				await context.SaveChangesAsync(); // TODO: Check error: > 0
+				await Send.SendKeyboard(message, client, context, LanguageHandler.ChooseLanguage(user.Language, @"
+Hi, I am a digital bot created with the support of the Ministry of Culture of the Republic of Tatarstan.
+Here you can find information about the most relevant events in the city of Kazan.
+			", @"
+Привет я цифровой бот, созданный при поддержке Министерства культуры РТ.
+Здесь ты можешь найти информацию о самых актуальных мероприятий города Казани.
+			"));
+				await Send.SendInlineKeyboard(chatId, LanguageHandler.ChooseLanguage(user.Language, "Choose language:", "Выберите язык:"), client);
 			}
-			await Send.SendInlineKeyboard(chatId, LanguageHandler.ChooseLanguage(user.Language, "Choose language:", "Выберите язык:"), client);
-			await Send.SendKeyboard(message, client, context);
 		}
 	}
 }

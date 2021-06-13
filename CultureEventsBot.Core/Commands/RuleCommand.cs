@@ -7,15 +7,15 @@ using Telegram.Bot.Types;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class LanguageCommand : Command
+	public class RuleCommand : Command
 	{
-		public override string Name => @"/language";
+		public override string Name => "/rule";
 
 		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			
-			await Send.SendInlineKeyboard(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose language:", "Выберите язык:"), client);
+			await Send.SendMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "At the moment, our bot has no restrictions on the terms of use.", "На данный момент наш бот не имеет ограничений в правилах использования."),client);
 		}
 	}
 }

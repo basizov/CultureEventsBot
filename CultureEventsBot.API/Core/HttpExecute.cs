@@ -101,11 +101,23 @@ namespace CultureEventsBot.API.Core
 			var response = await clientHttp.SendAsync(request);
 			var weather = await response.Content.ReadFromJsonAsync<Weather>();
 
+			request = new HttpRequestMessage(HttpMethod.Post, $"https://google-translate1.p.rapidapi.com/language/translate/v2");
+			request.Headers.Add("x-rapidapi-host", "google-translate1.p.rapidapi.com");
+			request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+			{
+				{ "q", weather.Current.Condition.Text },
+				{ "target", "ru" },
+				{ "source", "en" },
+			});
+			response = await clientHttp.SendAsync(request);
+			var conditionText = await response.Content.ReadFromJsonAsync<Data>();
+
 			await client.SendTextMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Weather for", "Погода на")} {weather.Current.Last_Updated}:
 {LanguageHandler.ChooseLanguage(user.Language, "Temperature is", "Температура")} {weather.Current.Temp_C}
 {LanguageHandler.ChooseLanguage(user.Language, "Feels like ", "Ощущается как")} {weather.Current.Feelslike_C}
 {LanguageHandler.ChooseLanguage(user.Language, "Wind speed is", "Скорость ветра:")} {weather.Current.Wind_Kph}
 {LanguageHandler.ChooseLanguage(user.Language, "Cloud is", "Облачность")} {weather.Current.Cloud}
+{conditionText?.Tranlations?.TranslatedText ?? weather.Current.Condition.Text}
 ");
 		}
         public async static Task	AdminAsync(Message message, TelegramBotClient client, DataContext context)
