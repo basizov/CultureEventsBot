@@ -44,6 +44,8 @@ namespace CultureEventsBot.API.Core
 
 			if (ev == null)
 				ev = await context.Films.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
+			if (ev == null)
+				ev = await context.Places.FirstOrDefaultAsync(e => e.Id == int.Parse(textId));
 			if (callbackQuery.Data == "fav" && users.FirstOrDefault(e => e.Favourites.Contains(ev)) == null)
 			{
 				user.Favourites.Add(ev);
@@ -102,6 +104,9 @@ namespace CultureEventsBot.API.Core
 				.Include(e => e.Images)
 				.Include(e => e.Genres)
 				.ToListAsync();
+			var placesDb = await context.Places
+				.Include(e => e.Images)
+				.ToListAsync();
 			var filters = new List<Favourite>();
 
 			foreach (var item in eventsDb)
@@ -109,6 +114,9 @@ namespace CultureEventsBot.API.Core
 					filters.Add(item);
 			foreach (var item in filmsDb)
 				if (item.Genres != null && item.Genres.FirstOrDefault(c => c.Name == callbackQuery.Data) != null)
+					filters.Add(item);
+			foreach (var item in placesDb)
+				if (item.Categories != null && item.Categories.FirstOrDefault(c => c == callbackQuery.Data) != null)
 					filters.Add(item);
 			foreach (var fil in filters)
 			{
@@ -132,7 +140,7 @@ namespace CultureEventsBot.API.Core
 			}
             await client.AnswerCallbackQueryAsync(
                 callbackQuery.Id,
-                $"{LanguageHandler.ChooseLanguage(user.Language, "Searched elements in the category", "Были найдены элементы в категории ")} {callbackQuery.Data}"
+                $"{LanguageHandler.ChooseLanguage(user.Language, "Searched elements in the category", "Были найдены элементы в категории")} {callbackQuery.Data}"
             );
 		}
 

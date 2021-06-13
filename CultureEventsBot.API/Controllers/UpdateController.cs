@@ -84,6 +84,10 @@ namespace CultureEventsBot.API.Controllers
 				await HttpExecute.ShowFilmsAsync(_httpClient, message, client, _context, commands, 1);
 			else if (message.Text == "Show films 5" || message.Text == "Ближайшие 5 фильмов")
 				await HttpExecute.ShowFilmsAsync(_httpClient, message, client, _context, commands, 5);
+			else if (message.Text == "Show place" || message.Text == "Следуйщее место")
+				await HttpExecute.ShowPlacesAsync(_httpClient, message, client, _context, commands, 1);
+			else if (message.Text == "Show places 5" || message.Text == "Ближайшие 5 мест")
+				await HttpExecute.ShowPlacesAsync(_httpClient, message, client, _context, commands, 5);
 			else if (message.Text == "Favourites" || message.Text == "Избранное")
 				await HttpExecute.FavouritesAsync(message, client, _context, commands);
 			else if (message.Text == "Weather" || message.Text == "Погода")
@@ -94,10 +98,12 @@ namespace CultureEventsBot.API.Controllers
 2. /language
 3. /rule
 4. /keyboard", client);
-			else if (message.Text == "Search by categories" || message.Text == "Искать по категориям")
+			else if (message.Text == "Search events by categories" || message.Text == "Искать события по категориям")
 				await HttpExecute.CategoriesAsync(message, client, _context);
-			else if (message.Text == "Search by genres" || message.Text == "Искать по жанрам")
+			else if (message.Text == "Search films by genres" || message.Text == "Искать фильмы по жанрам")
 				await HttpExecute.GenresAsync(message, client, _context);
+			else if (message.Text == "Search places by categories" || message.Text == "Искать места по категориям")
+				await HttpExecute.PlacesAsync(message, client, _context);
 			else
 				await HttpExecute.AdminAsync(message, client, _context);
 		}

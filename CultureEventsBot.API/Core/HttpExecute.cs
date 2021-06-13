@@ -33,10 +33,10 @@ namespace CultureEventsBot.API.Core
 
 					if (ev == null)
 						continue ;
-					if (ev.Description != null && ev.Description.Length > 8)
+					if (ev.Description != null)
 					{
-						ev.Description = ev.Description.Remove(0, 3);
-						ev.Description = ev.Description.Remove(ev.Description.Length - 5);
+						ev.Description = ev.Description.Replace("<p>", "");
+						ev.Description = ev.Description.Replace("</p>", "");
 					}
 					else
 						ev.Description = "";
@@ -193,10 +193,10 @@ namespace CultureEventsBot.API.Core
 
 						genre.Id = idx;
 					}
-					if (fil.Description != null && fil.Description.Length > 8)
+					if (fil.Description != null)
 					{
-						fil.Description = fil.Description.Remove(0, 3);
-						fil.Description = fil.Description.Remove(fil.Description.Length - 5);
+						fil.Description = fil.Description.Replace("<p>", "");
+						fil.Description = fil.Description.Replace("</p>", "");
 					}
 					else if (fil.Description == null)
 						fil.Description = "";
@@ -251,6 +251,79 @@ namespace CultureEventsBot.API.Core
 			}
 			await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose the genre:", "Выберите жанр:"), replyMarkup: new InlineKeyboardMarkup(keyboard));
 		}
+        public async static Task	ShowPlacesAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, IReadOnlyList<Command> commands, int pageSize)
+		{
+			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var page = user.CurrentPlace + 1;
+			var placesIds = await HttpWork<EventParent>.SendRequestAsync($"https://kudago.com/public-api/v1.4/places/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
+
+			if (placesIds != null)
+			{
+				foreach (var id in placesIds.Results)
+				{
+					var pl = await HttpWork<Place>.SendRequestAsync($"https://kudago.com/public-api/v1.4/places/{id.Id}", httpClient);
+
+					if (pl == null)
+						continue ;
+					if (pl.Description != null)
+					{
+						pl.Description = pl.Description.Replace("<p>", "");
+						pl.Description = pl.Description.Replace("</p>", "");
+					}
+					else
+						pl.Description = "";
+					var mes = await Send.SendPhotoAsync(message.Chat.Id, pl.Images.First().Image, $@"
+<i>{pl.Id}</i>
+<b>{pl.Title}</b>
+{pl.Description}
+<i>{pl.Site_Url}</i>", new InlineKeyboardMarkup(new[]
+						{
+							new []
+							{
+								InlineKeyboardButton.WithCallbackData($"{LanguageHandler.ChooseLanguage(user.Language, "Add to favourites", "Добавить в избранное")}", "fav")
+							}
+						}), ParseMode.Html, client);
+					
+					if (context.Places.FirstOrDefault(e => e.Id == pl.Id) == null)
+						context.Places.Add(pl);
+					++user.CurrentPlace;
+				}
+				context.SaveChanges();
+			}
+		}
+		public async static Task	PlacesAsync(Message message, TelegramBotClient client, DataContext context)
+		{
+			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var keyboard = new List<IEnumerable<InlineKeyboardButton>>();
+			var keyboardButtons = new List<InlineKeyboardButton>();
+
+			foreach (var pl in context.Places)
+			{
+				if (pl.Categories != null)
+				{
+					for (int i = 0; i < pl.Categories.Length; ++i)
+					{
+						var btn = new InlineKeyboardButton
+						{
+							Text = pl.Categories[i],
+							CallbackData = pl.Categories[i]
+						};
+
+						if (keyboardButtons.FirstOrDefault(b => b.Text == pl.Categories[i]) == null)
+							keyboardButtons.Add(btn);
+					}
+				}
+			}
+			foreach (var item in keyboardButtons)
+			{
+				var tempKeyboardButtons = new List<InlineKeyboardButton>();
+
+				tempKeyboardButtons.Add(item);
+				keyboard.Add(tempKeyboardButtons);
+			}
+			await client.SendTextMessageAsync(message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Choose the category:", "Выберите категорию:"), replyMarkup: new InlineKeyboardMarkup(keyboard));
+		}
+
 		private static string ConvertStringToEnum(ELanguage value)
 		{
 			if (value == ELanguage.English)

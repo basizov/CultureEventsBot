@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210613103524_CreateDBPlace")]
+    partial class CreateDBPlace
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +108,6 @@ namespace CultureEventsBot.Persistance.Migrations
                     b.Property<int>("CurrentFilm")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CurrentPlace")
-                        .HasColumnType("integer");
-
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
@@ -173,10 +172,6 @@ namespace CultureEventsBot.Persistance.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
-
-                    b.Property<string[]>("Categories")
-                        .HasColumnType("text[]")
-                        .HasColumnName("Place_Categories");
 
                     b.Property<string>("Phone")
                         .HasColumnType("text");

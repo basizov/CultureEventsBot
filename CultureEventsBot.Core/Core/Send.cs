@@ -43,9 +43,11 @@ namespace CultureEventsBot.Core.Core
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Menu", "Меню")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Weather", "Погода")}" },
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Show event", "Следущее событие")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Show events 5", "Ближайшие 5 событий")}" },
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Show film", "Следущий фильм")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Show films 5", "Ближайшие 5 фильмов")}" },
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Show place", "Следуйщее место")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Show places 5", "Ближайшие 5 мест")}" },
 					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Favourites", "Избранное")}" },
-					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search by categories", "Искать по категориям")}" },
-					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search by genres", "Искать по жанрам")}" }
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search events by categories", "Искать события по категориям")}" },
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search films by genres", "Искать фильмы по жанрам")}" },
+					new KeyboardButton[] { $"{LanguageHandler.ChooseLanguage(user.Language, "Search places by categories", "Искать места по категориям")}" }
 				},
 				resizeKeyboard: true
 			);
