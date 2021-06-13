@@ -118,11 +118,11 @@ namespace CultureEventsBot.API.Core
 			var conditionText = await response.Content.ReadFromJsonAsync<Data>();
 
 			await client.SendTextMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Weather for", "Погода на")} {weather.Current.Last_Updated}:
-{LanguageHandler.ChooseLanguage(user.Language, "Temperature is", "Температура")} {weather.Current.Temp_C}
-{LanguageHandler.ChooseLanguage(user.Language, "Feels like ", "Ощущается как")} {weather.Current.Feelslike_C}
-{LanguageHandler.ChooseLanguage(user.Language, "Wind speed is", "Скорость ветра:")} {weather.Current.Wind_Kph}
-{LanguageHandler.ChooseLanguage(user.Language, "Cloud is", "Облачность")} {weather.Current.Cloud}
-{conditionText?.Tranlations?.TranslatedText ?? weather.Current.Condition.Text}
+{LanguageHandler.ChooseLanguage(user.Language, "Temperature is", "Температура")} {weather.Current.Temp_C} {LanguageHandler.ChooseLanguage(user.Language, "degrees", "градуса")}
+{LanguageHandler.ChooseLanguage(user.Language, "Feels like ", "Ощущается как")} {weather.Current.Feelslike_C} {LanguageHandler.ChooseLanguage(user.Language, "degrees", "градуса")}
+{LanguageHandler.ChooseLanguage(user.Language, "Wind speed is", "Скорость ветра:")} {weather.Current.Wind_Kph} {LanguageHandler.ChooseLanguage(user.Language, "km/h", "км/ч")}
+{LanguageHandler.ChooseLanguage(user.Language, "Cloud is", "Облачность")} {weather.Current.Cloud}%
+{LanguageHandler.ChooseLanguage(user.Language, "Today is", "Сегодня")} {conditionText?.Tranlations?.TranslatedText ?? weather.Current.Condition.Text}
 ");
 		}
         public async static Task	AdminAsync(Message message, TelegramBotClient client, DataContext context)
