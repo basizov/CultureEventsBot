@@ -1,3 +1,4 @@
+using CultureEventsBot.API.Interfaces;
 using CultureEventsBot.API.Services;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Domain.Entities;

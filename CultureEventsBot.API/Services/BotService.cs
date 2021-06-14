@@ -1,4 +1,5 @@
-using CultureEventsBot.Domain.Entities;
+using CultureEventsBot.API.Interfaces;
+using CultureEventsBot.Core.Core;
 using Microsoft.Extensions.Options;
 
 namespace CultureEventsBot.API.Services

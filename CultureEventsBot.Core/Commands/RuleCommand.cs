@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Core;
+using CultureEventsBot.Core.Dialog;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
@@ -7,11 +8,11 @@ using Telegram.Bot.Types;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class RuleCommand : Command
+	public class	RuleCommand : Command
 	{
-		public override string Name => "/rule";
+		public override string	Name => "/rule";
 
-		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
+		public override async Task	ExecuteAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			

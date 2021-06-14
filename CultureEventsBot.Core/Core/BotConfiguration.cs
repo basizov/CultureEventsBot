@@ -1,4 +1,4 @@
-namespace CultureEventsBot.Domain.Entities
+namespace CultureEventsBot.Core.Core
 {
     public class BotConfiguration
     {

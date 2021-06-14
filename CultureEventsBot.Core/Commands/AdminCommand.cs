@@ -8,11 +8,11 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class AdminCommand : Command
+	public class	AdminCommand : Command
 	{
-		public override string Name => @"/admin";
+		public override string	Name => @"/admin";
 
-		public override async Task Execute(Message message, TelegramBotClient client, DataContext context)
+		public override async Task	ExecuteAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 
