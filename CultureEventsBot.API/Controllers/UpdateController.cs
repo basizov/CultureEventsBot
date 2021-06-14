@@ -72,7 +72,7 @@ namespace CultureEventsBot.API.Controllers
 			}
 			foreach (var command in Bot.HtppCommands)
 			{
-				if (command.Contains(message))
+				if (command.Contains(message, _context))
 				{
 					await command.ExecuteAsync(_httpClient ,message, client, _context, 1);
 					return ;

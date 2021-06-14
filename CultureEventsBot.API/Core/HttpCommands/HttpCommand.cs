@@ -12,7 +12,7 @@ namespace CultureEventsBot.API.Core.HttpCommands
         public abstract string	Name { get; }
 		
 		public abstract Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1);
-		public virtual bool	Contains(Message message)
+		public virtual bool	Contains(Message message, DataContext context = null)
 		{
 			var	res = message != null && message.Type == MessageType.Text;
 

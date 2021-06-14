@@ -5,13 +5,12 @@ using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class	KeyboardCommand : Command
+	public class	SentencesCommand : Command
 	{
-		public override string	Name => "/keyboard,Отмена,Cancel";
+		public override string	Name => "Where to go?,Куда пойти?,Вернуться,Back";
 
 		public override bool	Contains(Message message)
 		{
@@ -32,7 +31,7 @@ namespace CultureEventsBot.Core.Commands
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			
-			await Send.SendMessageAsync(message.Chat.Id, message.Text == "/keyboard" ? LanguageHandler.ChooseLanguage(user.Language, "Keyboard is available", "Клавиатура включена") : message.Text, client, replyMarkup: Keyboard.GetStartKeyboard(user));
+			await Send.SendMessageAsync(message.Chat.Id, message.Text, client, replyMarkup: Keyboard.GetWhereKeyboard(user));
 		}
 	}
 }

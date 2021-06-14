@@ -41,18 +41,7 @@ Here you can find information about the most relevant events in the city of Kaza
 			", @"
 Привет я цифровой бот, созданный при поддержке Министерства культуры РТ.
 Здесь ты можешь найти информацию о самых актуальных мероприятий города Казани.
-				"), client,
-					replyMarkup: new ReplyKeyboardMarkup(Keyboard.GetKeyboardMatrix(
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Menu", "Меню"), LanguageHandler.ChooseLanguage(user.Language, "Weather", "Погода")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Show event", "Следущее событие"), LanguageHandler.ChooseLanguage(user.Language, "Show events 5", "Ближайшие 5 событий")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Show film", "Следущий фильм"), LanguageHandler.ChooseLanguage(user.Language, "Show films 5", "Ближайшие 5 фильмов")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Show place", "Следуйщее место"), LanguageHandler.ChooseLanguage(user.Language, "Show places 5", "Ближайшие 5 мест")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Favourites", "Избранное")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Search events by categories", "Искать события по категориям")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Search films by genres", "Искать фильмы по жанрам")),
-						Keyboard.GetKeyboardLine(LanguageHandler.ChooseLanguage(user.Language, "Search places by categories", "Искать места по категориям"))
-					))
-				);
+				"), client, replyMarkup: Keyboard.GetStartKeyboard(user));
 				await Send.SendMessageAsync(chatId, LanguageHandler.ChooseLanguage(user.Language, "Choose language:", "Выберите язык:"), client,
 				replyMarkup: new InlineKeyboardMarkup(InlineKeyboard.GetInlineMatrix(
 					2,

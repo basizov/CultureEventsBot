@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210614153544_AddChoosePlan")]
+    partial class AddChoosePlan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,9 +102,6 @@ namespace CultureEventsBot.Persistance.Migrations
                     b.Property<long>("ChatId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("ChoosePlan")
-                        .HasColumnType("integer");
-
                     b.Property<int>("CurrentEvent")
                         .HasColumnType("integer");
 
@@ -126,6 +125,9 @@ namespace CultureEventsBot.Persistance.Migrations
 
                     b.Property<bool>("MayNotification")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("MyProperty")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SecondName")
                         .HasColumnType("text");
@@ -199,12 +201,9 @@ namespace CultureEventsBot.Persistance.Migrations
 
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.Genre", b =>
                 {
-                    b.HasOne("CultureEventsBot.Domain.Entities.Film", "Film")
+                    b.HasOne("CultureEventsBot.Domain.Entities.Film", null)
                         .WithMany("Genres")
-                        .HasForeignKey("FilmId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Film");
+                        .HasForeignKey("FilmId");
                 });
 
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.ImageResponse", b =>

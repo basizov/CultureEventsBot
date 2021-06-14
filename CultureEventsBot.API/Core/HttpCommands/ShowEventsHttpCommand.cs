@@ -16,18 +16,21 @@ namespace CultureEventsBot.API.Core.HttpCommands
 {
 	public class	ShowEventsHttpCommand : HttpCommand
 	{
-		public override string	Name => "Show events,Show events 5,Следущее событие,Ближайшие 5 событий";
+		public override string	Name => "Next,Далее,Previous,Назад";
 
-		public override bool	Contains(Message message)
+		public override bool	Contains(Message message, DataContext context = null)
 		{
 			var	res = message != null && message.Text != null;
 			var	splitName = Name.Split(",");
+			Domain.Entities.User user = null;
 
 			if (res)
 			{
 				foreach (var name in splitName)
 				{
-					res = message.Text.Contains(name);
+					if (context != null)
+						user = context.Users.FirstOrDefault(u => u.ChatId == message.Chat.Id);
+					res = message.Text.Contains(name) && (user == null || user.ChoosePlan == EChoosePlan.Event);
 					if (res) break ;
 				}
 			}
@@ -36,6 +39,10 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		public override async Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+
+			user.CurrentEvent += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
+			if (user.CurrentEvent < 0)
+				user.CurrentEvent = 0;
 			var page = user.CurrentEvent + 1;
 			var eventsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
 			if (eventsIds != null)
@@ -43,7 +50,9 @@ namespace CultureEventsBot.API.Core.HttpCommands
 				foreach (var id in eventsIds.Results)
 				{
 					var ev = await GetEventByIdAsync(id.Id, httpClient, user);
-
+					
+					if (ev == null)
+						break ;
 					await Send.SendPhotoAsync(message.Chat.Id, ev.Images.First().Image, $@"
 <i>{ev.Id}</i>
 <b>{ev.Title}</b>
@@ -56,8 +65,11 @@ namespace CultureEventsBot.API.Core.HttpCommands
 					), parseMode: ParseMode.Html);
 					if (context.Events.FirstOrDefault(e => e.Id == ev.Id) == null)
 						context.Events.Add(ev);
-					++user.CurrentEvent;
+					if (pageSize > 1)
+						++user.CurrentEvent;
 				}
+				if (pageSize > 1)
+					--user.CurrentEvent;
 			}
 			context.SaveChanges();
 		}

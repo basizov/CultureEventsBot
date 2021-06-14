@@ -13,7 +13,7 @@ namespace CultureEventsBot.API.Core.HttpCommands
 	{
 		public override string Name => "Weather,Погода";
 
-		public override bool	Contains(Message message)
+		public override bool	Contains(Message message, DataContext context = null)
 		{
 			var	res = message != null && message.Text != null;
 			var	splitName = Name.Split(",");

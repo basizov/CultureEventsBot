@@ -19,6 +19,7 @@ namespace CultureEventsBot.Domain.Entities
 		public int	CurrentEvent { get; set; }
 		public int	CurrentFilm { get; set; }
 		public int	CurrentPlace { get; set; }
+		public EChoosePlan	ChoosePlan { get; set; }
 		public ICollection<Favourite>	Favourites { get; set; } = new List<Favourite>();
     }
 }

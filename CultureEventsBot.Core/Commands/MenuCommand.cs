@@ -16,7 +16,7 @@ namespace CultureEventsBot.Core.Commands
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 
-			await Send.SendMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point", "Выберите пункт меню")}:
+			await Send.SendMessageAsync(message.Chat.Id, $@"{LanguageHandler.ChooseLanguage(user.Language, "Choose a menu point:", "Выберите пункт меню:")}:
 1. /info
 2. /language
 3. /rule

@@ -33,6 +33,9 @@ namespace CultureEventsBot.API.Core
             commandsList.Add(new MenuCommand());
             commandsList.Add(new RuleCommand());
             commandsList.Add(new StartCommand());
+            commandsList.Add(new SentencesCommand());
+            commandsList.Add(new NavigationCommand());
+            commandsList.Add(new DataCommand());
 
 			htppCommandsList = new List<HttpCommand>();
             htppCommandsList.Add(new ShowEventsHttpCommand());

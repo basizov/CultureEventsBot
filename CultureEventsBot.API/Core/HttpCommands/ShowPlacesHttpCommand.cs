@@ -16,18 +16,21 @@ namespace CultureEventsBot.API.Core.HttpCommands
 {
 	public class ShowPlacesHttpCommand : HttpCommand
 	{
-		public override string Name => "Show place,Show places 5,Следуйщее место,Ближайшие 5 мест";
+		public override string Name => "Next,Далее,Previous,Назад";
 
-		public override bool	Contains(Message message)
+		public override bool	Contains(Message message, DataContext context = null)
 		{
 			var	res = message != null && message.Text != null;
 			var	splitName = Name.Split(",");
+			Domain.Entities.User user = null;
 
 			if (res)
 			{
 				foreach (var name in splitName)
 				{
-					res = message.Text.Contains(name);
+					if (context != null)
+						user = context.Users.FirstOrDefault(u => u.ChatId == message.Chat.Id);
+					res = message.Text.Contains(name) && (user == null || user.ChoosePlan == EChoosePlan.Place);
 					if (res) break ;
 				}
 			}
@@ -36,6 +39,10 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		public override async Task ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+
+			user.CurrentPlace += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
+			if (user.CurrentPlace < 0)
+				user.CurrentPlace = 0;
 			var page = user.CurrentPlace + 1;
 			var placesIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $" https://kudago.com/public-api/v1.4/places/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
 			if (placesIds != null)
@@ -44,6 +51,8 @@ namespace CultureEventsBot.API.Core.HttpCommands
 				{
 					var place = await GetPlaceByIdAsync(id.Id, httpClient, user);
 
+					if (place == null)
+						break ;
 					await Send.SendPhotoAsync(message.Chat.Id, place.Images.First().Image, $@"
 <i>{place.Id}</i>
 <b>{place.Title}</b>
@@ -55,8 +64,11 @@ namespace CultureEventsBot.API.Core.HttpCommands
 					), parseMode: ParseMode.Html);
 					if (context.Places.FirstOrDefault(e => e.Id == place.Id) == null)
 						context.Places.Add(place);
-					++user.CurrentPlace;
+					if (pageSize > 1)
+						++user.CurrentPlace;
 				}
+				if (pageSize > 1)
+					--user.CurrentPlace;
 			}
 			context.SaveChanges();
 		}
