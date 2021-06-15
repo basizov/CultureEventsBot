@@ -40,12 +40,13 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		public override async Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var	categories = user.Categories == null ? "" : $"&categories={JoinCategories(user.Categories)}";
 
 			user.CurrentFilm += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
 			if (user.CurrentFilm < 0)
 				user.CurrentFilm = 0;
 			var page = user.CurrentFilm + 1;
-			var filmsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/movies/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
+			var filmsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/movies/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}", httpClient);
 			if (filmsIds != null)
 			{
 				foreach (var id in filmsIds.Results)
@@ -94,12 +95,6 @@ namespace CultureEventsBot.API.Core.HttpCommands
 				res.Description = res.Description.Replace("</p>", "");
 			}
 			return (res);
-		}
-		private string	ConvertStringToEnum(ELanguage value)
-		{
-			if (value == ELanguage.English)
-				return ("en");
-			return ("ru");
 		}
 	}
 }

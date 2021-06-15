@@ -63,14 +63,14 @@ namespace CultureEventsBot.Core.Dialog
 		{
 			return (new ReplyKeyboardMarkup(Keyboard.GetKeyboardMatrix(
 				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Events", "События")} {Stickers.Event}", $"{LanguageHandler.ChooseLanguage(user.Language, "Places", "Места")} {Stickers.Place}"),
-				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Films", "Фильмы")} {Stickers.Movie}", $"{LanguageHandler.ChooseLanguage(user.Language, "Cancel", "Отмена")} {Stickers.Cancel}")
+				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Films", "Фильмы")} {Stickers.Movie}", $"{LanguageHandler.ChooseLanguage(user.Language, "Back", "Отмена")} {Stickers.Return}")
 			), resizeKeyboard: true));
 		}
 		public static ReplyKeyboardMarkup	GetNavKeyboard(User user)
 		{
 			return (new ReplyKeyboardMarkup(Keyboard.GetKeyboardMatrix(
 				Keyboard.GetKeyboardLine($"{Stickers.Previous} {LanguageHandler.ChooseLanguage(user.Language, "Previous", "Назад")}", $"{LanguageHandler.ChooseLanguage(user.Language, "Date", "Дата")} {Stickers.Date}", $"{LanguageHandler.ChooseLanguage(user.Language, "Next", "Далее")} {Stickers.Next}"),
-				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Filtera", "Фильтры")} {Stickers.Filter}", $"{LanguageHandler.ChooseLanguage(user.Language, "Back", "Вернуться")} {Stickers.Cancel}")
+				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Filters", "Фильтры")} {Stickers.Filter}", $"{LanguageHandler.ChooseLanguage(user.Language, "Return", "Вернуться")} {Stickers.Return}")
 			), resizeKeyboard: true));
 		}
     }

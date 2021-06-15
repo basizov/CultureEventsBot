@@ -42,11 +42,14 @@ namespace CultureEventsBot.API.Core
             htppCommandsList.Add(new ShowFilmsHttpCommand());
             htppCommandsList.Add(new ShowPlacesHttpCommand());
             htppCommandsList.Add(new WeatherHttpCommand());
+            htppCommandsList.Add(new FiltersCommand());
 
             inlineList = new List<Inline>();
             inlineList.Add(new AdminInline());
             inlineList.Add(new FavouriteInline());
             inlineList.Add(new LanguageInline());
+            inlineList.Add(new FilterInline());
+            inlineList.Add(new FromFiltersInline());
 
             botClient = new TelegramBotClient(config.Key);
             var hook = string.Format(config.Url, "api/message/update");

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Core.Dialog;
@@ -11,7 +12,7 @@ namespace CultureEventsBot.Core.Commands
 {
 	public class	KeyboardCommand : Command
 	{
-		public override string	Name => "/keyboard,Отмена,Cancel";
+		public override string	Name => "/keyboard,Отмена,Back";
 
 		public override bool	Contains(Message message)
 		{
@@ -33,6 +34,14 @@ namespace CultureEventsBot.Core.Commands
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			
 			await Send.SendMessageAsync(message.Chat.Id, message.Text == "/keyboard" ? LanguageHandler.ChooseLanguage(user.Language, "Keyboard is available", "Клавиатура включена") : message.Text, client, replyMarkup: Keyboard.GetStartKeyboard(user));
+			if (context.Categories.Any(c => c.IsChecked))
+			{
+				var	categories = await context.Categories.Where(c => c.IsChecked).ToListAsync();
+				
+				foreach (var category in categories)
+					category.IsChecked = false;
+				await context.SaveChangesAsync();
+			}
 		}
 	}
 }

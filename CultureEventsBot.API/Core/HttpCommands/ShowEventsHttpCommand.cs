@@ -39,12 +39,13 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		public override async Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var	categories = user.Categories == null ? "" : $"&categories={JoinCategories(user.Categories)}";
 
 			user.CurrentEvent += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
 			if (user.CurrentEvent < 0)
 				user.CurrentEvent = 0;
 			var page = user.CurrentEvent + 1;
-			var eventsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}", httpClient);
+			var eventsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}", httpClient);
 			if (eventsIds != null)
 			{
 				foreach (var id in eventsIds.Results)
@@ -88,12 +89,6 @@ namespace CultureEventsBot.API.Core.HttpCommands
 					res.Price = $"{LanguageHandler.ChooseLanguage(user.Language, "Unknown", "Неизвестно")}";
 			}
 			return (res);
-		}
-		private string	ConvertStringToEnum(ELanguage value)
-		{
-			if (value == ELanguage.English)
-				return ("en");
-			return ("ru");
 		}
 	}
 }

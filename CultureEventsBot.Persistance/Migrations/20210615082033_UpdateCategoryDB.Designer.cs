@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210615082033_UpdateCategoryDB")]
+    partial class UpdateCategoryDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,19 +23,15 @@ namespace CultureEventsBot.Persistance.Migrations
 
             modelBuilder.Entity("CultureEventsBot.Domain.Entities.Category", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("ChoosePlan")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsChecked")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("text");
-
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
                     b.ToTable("Categories");
                 });
@@ -115,9 +113,6 @@ namespace CultureEventsBot.Persistance.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string[]>("Categories")
-                        .HasColumnType("text[]");
 
                     b.Property<long>("ChatId")
                         .HasColumnType("bigint");

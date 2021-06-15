@@ -13,21 +13,6 @@ namespace CultureEventsBot.API.Core.HttpCommands
 	{
 		public override string Name => "Weather,Погода";
 
-		public override bool	Contains(Message message, DataContext context = null)
-		{
-			var	res = message != null && message.Text != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = message.Text.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 		public override async Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1)
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);

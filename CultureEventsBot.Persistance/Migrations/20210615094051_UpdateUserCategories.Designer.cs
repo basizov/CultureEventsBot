@@ -3,15 +3,17 @@ using System;
 using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CultureEventsBot.Persistance.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210615094051_UpdateUserCategories")]
+    partial class UpdateUserCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +31,6 @@ namespace CultureEventsBot.Persistance.Migrations
 
                     b.Property<bool>("IsChecked")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("text");
 
                     b.HasKey("Name");
 

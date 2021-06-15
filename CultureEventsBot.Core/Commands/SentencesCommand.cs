@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Core.Dialog;
@@ -10,7 +11,7 @@ namespace CultureEventsBot.Core.Commands
 {
 	public class	SentencesCommand : Command
 	{
-		public override string	Name => "Where to go?,Куда пойти?,Вернуться,Back";
+		public override string	Name => "Where to go?,Куда пойти?,Вернуться,Return";
 
 		public override bool	Contains(Message message)
 		{
@@ -32,6 +33,14 @@ namespace CultureEventsBot.Core.Commands
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			
 			await Send.SendMessageAsync(message.Chat.Id, message.Text, client, replyMarkup: Keyboard.GetWhereKeyboard(user));
+			if (context.Categories.Any(c => c.IsChecked))
+			{
+				var	categories = await context.Categories.Where(c => c.IsChecked).ToListAsync();
+				
+				foreach (var category in categories)
+					category.IsChecked = false;
+				await context.SaveChangesAsync();
+			}
 		}
 	}
 }
