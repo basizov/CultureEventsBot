@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CultureEventsBot.Core.Core;
 using CultureEventsBot.Core.Dialog;
 using CultureEventsBot.Domain.Enums;
 using CultureEventsBot.Persistance;
@@ -30,10 +31,11 @@ namespace CultureEventsBot.Core.Commands
 		public override async Task	ExecuteAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var	mes = $"{LanguageHandler.ChooseLanguage(user.Language, "What are you interested in?", "Что вас интерисует?")} {Stickers.Interests}";
 			
 			user.ChoosePlan = ConvertStringToEnum(message.Text);
 			await context.SaveChangesAsync();
-			await Send.SendMessageAsync(message.Chat.Id, message.Text, client, replyMarkup: Keyboard.GetNavKeyboard(user));
+			await Send.SendMessageAsync(message.Chat.Id, mes, client, replyMarkup: Keyboard.GetNavKeyboard(user));
 		}
 
 		private EChoosePlan ConvertStringToEnum(string text)

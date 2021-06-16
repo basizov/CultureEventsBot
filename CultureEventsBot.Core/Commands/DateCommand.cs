@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class	DataCommand : Command
+	public class	DateCommand : Command
 	{
 		public override string	Name => "Date,Дата";
 

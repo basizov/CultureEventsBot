@@ -20,5 +20,9 @@ namespace CultureEventsBot.Core.Core
         public static string	Cancel => "🚫";
         public static string	Ok => "👌";
         public static string	Stop => "⛔";
+        public static string	SeeWether => "🌦";
+        public static string	EventType => "🎉";
+        public static string	ChangeMind => "🙄";
+        public static string	Interests => "🍦";
     }
 }

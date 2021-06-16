@@ -32,8 +32,9 @@ namespace CultureEventsBot.Core.Commands
 		public override async Task	ExecuteAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
+			var	mes = $"{LanguageHandler.ChooseLanguage(user.Language, "Would you like to see the weather?", "Не хотите ли посмотреть погоду?")} {Stickers.SeeWether}";
 			
-			await Send.SendMessageAsync(message.Chat.Id, message.Text == "/keyboard" ? LanguageHandler.ChooseLanguage(user.Language, "Keyboard is available", "Клавиатура включена") : message.Text, client, replyMarkup: Keyboard.GetStartKeyboard(user));
+			await Send.SendMessageAsync(message.Chat.Id, message.Text == "/keyboard" ? LanguageHandler.ChooseLanguage(user.Language, "Keyboard is available", "Клавиатура включена") : mes, client, replyMarkup: Keyboard.GetStartKeyboard(user));
 			if (context.Categories.Any(c => c.IsChecked))
 			{
 				var	categories = await context.Categories.Where(c => c.IsChecked).ToListAsync();
