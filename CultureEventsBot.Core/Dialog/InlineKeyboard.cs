@@ -48,5 +48,24 @@ namespace CultureEventsBot.Core.Dialog
 			}
 			return (inlineKeyboard);
 		}
+        public static IEnumerable<InlineKeyboardButton>	GetInlineKeyboardLine(Dictionary<string, string> words)
+		{
+			var res = new List<InlineKeyboardButton>();
+
+			foreach (var word in words)
+				if (res.FirstOrDefault(b => b.Text == word.Key) == null)
+					res.Add(GetInlineKeyboardButton(word.Value, word.Key));
+			return (res);
+		}
+        public static InlineKeyboardButton	GetInlineKeyboardButton(string value, string key)
+		{
+			var res = new InlineKeyboardButton
+			{
+				Text = value,
+				CallbackData = key
+			};
+
+			return (res);
+		}
     }
 }

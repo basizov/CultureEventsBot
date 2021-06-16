@@ -78,6 +78,7 @@ namespace CultureEventsBot.API.Controllers
 					return ;
 				}
 			}
+			await Send.SendMessageAsync(message.Chat.Id, $"{LanguageHandler.ChooseLanguage(user.Language, "I don't know how to do that yet", "Я пока так еще не умею")} {Stickers.SadFace}", client);
 // 			else if (message.Text == "Search events by categories" || message.Text == "Искать события по категориям")
 // 				await HttpExecute.CategoriesAsync(message, client, _context);
 // 			else if (message.Text == "Search films by genres" || message.Text == "Искать фильмы по жанрам")
@@ -97,7 +98,7 @@ namespace CultureEventsBot.API.Controllers
 					return ;
 				}
 			}
-			await InlineHandlers.FilterAsync(callbackQuery, client, _context);
+			await client.AnswerCallbackQueryAsync(callbackQuery.Id, callbackQuery.Data);
         }
         private async Task UnknownTypeHandlerAsync(Update update)
         {
