@@ -30,21 +30,6 @@ namespace CultureEventsBot.Core.Inlines
 			await Send.SendMessageAsync(callbackQuery.Message.Chat.Id, LanguageHandler.ChooseLanguage(user.Language, "Language is changed", "Язык изменен"), client,
 				replyMarkup: Keyboard.GetStartKeyboard(user));
 		}
-		public override bool	Contains(CallbackQuery callbackQuery)
-		{
-			var	res = callbackQuery != null && callbackQuery.Data != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = callbackQuery.Data.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 
 		private static ELanguage	ConvertStringToEnum(string value)
 		{

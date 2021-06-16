@@ -13,8 +13,16 @@ namespace CultureEventsBot.Core.Inlines
 		public virtual bool	Contains(CallbackQuery callbackQuery)
 		{
 			var	res = callbackQuery != null && callbackQuery.Data != null;
+			var	splitName = Name.Split(",");
 
-			res = res && callbackQuery.Data.Contains(Name);
+			if (res)
+			{
+				foreach (var name in splitName)
+				{
+					res = callbackQuery.Data.Contains(name);
+					if (res) break ;
+				}
+			}
 			return (res);
 		}
     }

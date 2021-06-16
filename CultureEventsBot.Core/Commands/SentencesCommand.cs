@@ -13,21 +13,6 @@ namespace CultureEventsBot.Core.Commands
 	{
 		public override string	Name => "Where to go?,Куда пойти?,Вернуться,Return";
 
-		public override bool	Contains(Message message)
-		{
-			var	res = message != null && message.Text != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = message.Text.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 		public override async Task	ExecuteAsync(Message message, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);

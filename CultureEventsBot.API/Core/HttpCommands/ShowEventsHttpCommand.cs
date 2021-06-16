@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -40,12 +41,14 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var	categories = user.Categories == null || user.Categories.Length == 0 ? "" : $"&categories={JoinCategories(user.Categories)}";
+			var	actualSince = user.BeginFilterDate == null ? "" : $"&actual_since={((DateTimeOffset)user.BeginFilterDate).ToUnixTimeSeconds()}";
+			var	actualUntil = user.EndFilterDate == null ? "" : $"&actual_until={((DateTimeOffset)user.EndFilterDate).ToUnixTimeSeconds()}";
 
 			user.CurrentEvent += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
 			if (user.CurrentEvent < 0)
 				user.CurrentEvent = 0;
 			var page = user.CurrentEvent + 1;
-			var eventsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}", httpClient);
+			var eventsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/events/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}{actualSince}{actualUntil}", httpClient);
 			if (eventsIds != null)
 			{
 				foreach (var id in eventsIds.Results)

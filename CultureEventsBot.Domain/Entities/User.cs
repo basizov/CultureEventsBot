@@ -21,6 +21,11 @@ namespace CultureEventsBot.Domain.Entities
 		public int	CurrentPlace { get; set; }
 		public EChoosePlan	ChoosePlan { get; set; }
 		public string[]	Categories { get; set; }
+		public DateTime	FilterDate { get; set; }
+		public DateTime?	BeginFilterDate { get; set; }
+		public DateTime?	EndFilterDate { get; set; }
+		public DateTime?	NewBeginFilterDate { get; set; }
+		public DateTime?	NewEndFilterDate { get; set; }
 		public ICollection<Favourite>	Favourites { get; set; } = new List<Favourite>();
     }
 }

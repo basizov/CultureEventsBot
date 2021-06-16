@@ -12,21 +12,6 @@ namespace CultureEventsBot.Core.Inlines
 	{
 		public override string	Name => $"{Stickers.Save},{Stickers.Cancel}";
 
-		public override bool	Contains(CallbackQuery callbackQuery)
-		{
-			var	res = callbackQuery != null && callbackQuery.Data != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = callbackQuery.Data.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 		public override async Task	ExecuteAsync(CallbackQuery callbackQuery, TelegramBotClient client, DataContext context)
 		{
 			var	user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == callbackQuery.Message.Chat.Id);

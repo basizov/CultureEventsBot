@@ -50,6 +50,9 @@ namespace CultureEventsBot.API.Core
             inlineList.Add(new LanguageInline());
             inlineList.Add(new FilterInline());
             inlineList.Add(new FromFiltersInline());
+            inlineList.Add(new DateInline());
+            inlineList.Add(new DateNavInline());
+            inlineList.Add(new DateSureInline());
 
             botClient = new TelegramBotClient(config.Key);
             var hook = string.Format(config.Url, "api/message/update");

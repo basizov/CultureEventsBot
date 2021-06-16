@@ -42,21 +42,6 @@ namespace CultureEventsBot.Core.Commands
 				}
 			}
 		}
-		public override bool	Contains(Message message)
-		{
-			var	res = message != null && message.Text != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = message.Text.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 
 		private static string	ConvertFavouriteToEvent(Domain.Entities.User user, Favourite favourite)
 		{

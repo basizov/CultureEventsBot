@@ -41,12 +41,14 @@ namespace CultureEventsBot.API.Core.HttpCommands
 		{
 			var user = await context.Users.FirstOrDefaultAsync(u => u.ChatId == message.Chat.Id);
 			var	categories = user.Categories == null || user.Categories.Length == 0 ? "" : $"&categories={JoinCategories(user.Categories)}";
+			var	actualSince = user.BeginFilterDate == null ? "" : $"&actual_since={((DateTimeOffset)user.BeginFilterDate).ToUnixTimeSeconds()}";
+			var	actualUntil = user.EndFilterDate == null ? "" : $"&actual_until={((DateTimeOffset)user.EndFilterDate).ToUnixTimeSeconds()}";
 
 			user.CurrentFilm += (message.Text.Contains("Next") || message.Text.Contains("Далее") ? 1 : -1);
 			if (user.CurrentFilm < 0)
 				user.CurrentFilm = 0;
 			var page = user.CurrentFilm + 1;
-			var filmsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/movies/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}", httpClient);
+			var filmsIds = await HttpWork<Parent>.SendRequestAsync(HttpMethod.Get, $"https://kudago.com/public-api/v1.4/movies/?lang={ConvertStringToEnum(user.Language)}&location=kzn&page_size={pageSize}&page={page}{categories}{actualSince}{actualUntil}", httpClient);
 			if (filmsIds != null)
 			{
 				foreach (var id in filmsIds.Results)

@@ -26,5 +26,6 @@ namespace CultureEventsBot.Core.Core
         public static string	Interests => "🍦";
         public static string	PlannedDate => "🗓";
         public static string	SadFace => "🥺";
+        public static string	Clear => "🧹";
     }
 }

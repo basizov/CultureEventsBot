@@ -22,20 +22,5 @@ namespace CultureEventsBot.Core.Commands
 3. /rule
 4. /keyboard", client);
 		}
-		public override bool	Contains(Message message)
-		{
-			var	res = message != null && message.Text != null;
-			var	splitName = Name.Split(",");
-
-			if (res)
-			{
-				foreach (var name in splitName)
-				{
-					res = message.Text.Contains(name);
-					if (res) break ;
-				}
-			}
-			return (res);
-		}
 	}
 }
