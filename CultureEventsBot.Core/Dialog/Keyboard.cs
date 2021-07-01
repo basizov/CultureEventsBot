@@ -6,9 +6,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Dialog
 {
-    public static class	Keyboard
-    {
-        public static IEnumerable<IEnumerable<KeyboardButton>>	GetKeyboard(int columns, params string[] keywords)
+  public static class	Keyboard
+  {
+    public static IEnumerable<IEnumerable<KeyboardButton>>	GetKeyboard(int columns, params string[] keywords)
 		{
 			var keyboard = new List<IEnumerable<KeyboardButton>>();
 			var keyboardButtons = new List<KeyboardButton>();
@@ -26,13 +26,13 @@ namespace CultureEventsBot.Core.Dialog
 			}
 			return (keyboard);
 		}
-        public static KeyboardButton	GetKeyboardButton(string keyword)
+    public static KeyboardButton	GetKeyboardButton(string keyword)
 		{
 			var res = new KeyboardButton(keyword);
 
 			return (res);
 		}
-        public static IEnumerable<KeyboardButton>	GetKeyboardLine(params string[] keywords)
+    public static IEnumerable<KeyboardButton>	GetKeyboardLine(params string[] keywords)
 		{
 			var res = new List<KeyboardButton>();
 
@@ -41,7 +41,7 @@ namespace CultureEventsBot.Core.Dialog
 					res.Add(GetKeyboardButton(keyword));
 			return (res);
 		}
-        public static IEnumerable<IEnumerable<KeyboardButton>>	GetKeyboardMatrix(params IEnumerable<KeyboardButton>[] keyboards)
+    public static IEnumerable<IEnumerable<KeyboardButton>>	GetKeyboardMatrix(params IEnumerable<KeyboardButton>[] keyboards)
 		{
 			var res = new List<IEnumerable<KeyboardButton>>();
 
@@ -73,5 +73,5 @@ namespace CultureEventsBot.Core.Dialog
 				Keyboard.GetKeyboardLine($"{LanguageHandler.ChooseLanguage(user.Language, "Filters", "Фильтры")} {Stickers.Filter}", $"{LanguageHandler.ChooseLanguage(user.Language, "Return", "Вернуться")} {Stickers.Return}")
 			), resizeKeyboard: true));
 		}
-    }
+  }
 }

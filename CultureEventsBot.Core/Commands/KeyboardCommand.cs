@@ -6,11 +6,10 @@ using CultureEventsBot.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class	KeyboardCommand : Command
+  public class	KeyboardCommand : Command
 	{
 		public override string	Name => "/keyboard,Отмена,Back";
 

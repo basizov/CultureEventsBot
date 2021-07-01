@@ -1,0 +1,12 @@
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\bin\Debug\net5.0\CultureEventsBot.Domain.deps.json
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\bin\Debug\net5.0\CultureEventsBot.Domain.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\bin\Debug\net5.0\ref\CultureEventsBot.Domain.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\bin\Debug\net5.0\CultureEventsBot.Domain.pdb
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.csprojAssemblyReference.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.AssemblyInfoInputs.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.AssemblyInfo.cs
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.csproj.CoreCompileInputs.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\ref\CultureEventsBot.Domain.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Domain\obj\Debug\net5.0\CultureEventsBot.Domain.pdb

@@ -1,9 +1,9 @@
 namespace CultureEventsBot.Core.Core
 {
-    public class Weather
-    {
-        public CurrentWeather Current { get; set; }
-    }
+  public class Weather
+  {
+    public CurrentWeather Current { get; set; }
+  }
 
 	public class CurrentWeather
 	{

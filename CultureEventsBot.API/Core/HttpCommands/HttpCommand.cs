@@ -5,13 +5,12 @@ using CultureEventsBot.Domain.Enums;
 using CultureEventsBot.Persistance;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace CultureEventsBot.API.Core.HttpCommands
 {
-    public abstract class	HttpCommand
-    {
-        public abstract string	Name { get; }
+  public abstract class	HttpCommand
+  {
+    public abstract string	Name { get; }
 		
 		public abstract Task	ExecuteAsync(IHttpClientFactory httpClient, Message message, TelegramBotClient client, DataContext context, int pageSize = 1);
 		public virtual bool	Contains(Message message, DataContext context = null)
@@ -46,5 +45,5 @@ namespace CultureEventsBot.API.Core.HttpCommands
 				return ("en");
 			return ("ru");
 		}
-    }
+  }
 }

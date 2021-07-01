@@ -1,0 +1,15 @@
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\CultureEventsBot.Persistance.deps.json
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\CultureEventsBot.Persistance.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\ref\CultureEventsBot.Persistance.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\CultureEventsBot.Persistance.pdb
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\CultureEventsBot.Domain.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\bin\Debug\net5.0\CultureEventsBot.Domain.pdb
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.csprojAssemblyReference.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.GeneratedMSBuildEditorConfig.editorconfig
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.AssemblyInfoInputs.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.AssemblyInfo.cs
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.csproj.CoreCompileInputs.cache
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.csproj.CopyComplete
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\ref\CultureEventsBot.Persistance.dll
+C:\Workplace\CultureEventBot\CultureEventsBot.Persistance\obj\Debug\net5.0\CultureEventsBot.Persistance.pdb

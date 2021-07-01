@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CultureEventsBot.Core.Core;
 using CultureEventsBot.Core.Dialog;
@@ -11,7 +10,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CultureEventsBot.Core.Commands
 {
-	public class	DateCommand : Command
+  public class	DateCommand : Command
 	{
 		public override string	Name => "Date,Дата";
 

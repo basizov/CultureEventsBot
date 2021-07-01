@@ -8,8 +8,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace CultureEventsBot.Core.Dialog
 {
 	public static class	InlineKeyboard
-    {
-        public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetInlineKeyboard(int columns, params string[] keywords)
+  {
+    public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetInlineKeyboard(int columns, params string[] keywords)
 		{
 			var inlineKeyboard = new List<IEnumerable<InlineKeyboardButton>>();
 			var inlineKeyboardButtons = new List<InlineKeyboardButton>();
@@ -37,7 +37,7 @@ namespace CultureEventsBot.Core.Dialog
 			}
 			return (inlineKeyboard);
 		}
-        public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetInlineMatrix(int columns, params InlineKeyboardButton[] inlineKeyboardButtons)
+    public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetInlineMatrix(int columns, params InlineKeyboardButton[] inlineKeyboardButtons)
 		{
 			var inlineKeyboard = new List<IEnumerable<InlineKeyboardButton>>();
 
@@ -51,7 +51,7 @@ namespace CultureEventsBot.Core.Dialog
 			}
 			return (inlineKeyboard);
 		}
-        public static IEnumerable<InlineKeyboardButton>	GetInlineKeyboardLine(Dictionary<string, string> words)
+    public static IEnumerable<InlineKeyboardButton>	GetInlineKeyboardLine(Dictionary<string, string> words)
 		{
 			var res = new List<InlineKeyboardButton>();
 
@@ -60,7 +60,7 @@ namespace CultureEventsBot.Core.Dialog
 					res.Add(GetInlineKeyboardButton(word.Value, word.Key));
 			return (res);
 		}
-        public static InlineKeyboardButton	GetInlineKeyboardButton(string value, string key)
+    public static InlineKeyboardButton	GetInlineKeyboardButton(string value, string key)
 		{
 			var res = new InlineKeyboardButton
 			{
@@ -70,7 +70,7 @@ namespace CultureEventsBot.Core.Dialog
 
 			return (res);
 		}
-        public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetDateInlineKeyboard(User user)
+    public static IEnumerable<IEnumerable<InlineKeyboardButton>>	GetDateInlineKeyboard(User user)
 		{
 			var	months = new []
 			{
@@ -151,5 +151,5 @@ namespace CultureEventsBot.Core.Dialog
 			}));
 			return (inlineKeyboard);
 		}
-    }
+  }
 }
